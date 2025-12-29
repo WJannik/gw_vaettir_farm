@@ -28,12 +28,12 @@ def is_color(img_array, color_name, r_min=0, r_max=255, g_min=0, g_max=255, b_mi
     )
     # Count pixels matching the color
     pixel_count = np.sum(color_mask)
-    print(f"{color_name.capitalize()} pixels found: {pixel_count}")
+    #print(f"{color_name.capitalize()} pixels found: {pixel_count}")
     return pixel_count > pixel_threshold
 
 def is_red(img_array, pixel_threshold=25):
     # Red is typically high red, low green and blue
-    return is_color(img_array, "red", r_min=200, r_max=255, g_min=0, g_max=100, b_min=0, b_max=100, pixel_threshold=pixel_threshold)
+    return is_color(img_array, "red", r_min=150, r_max=255, g_min=0, g_max=100, b_min=0, b_max=100, pixel_threshold=pixel_threshold)
 
 def is_yellow(img_array, pixel_threshold=20):
     # Yellow is typically high red and green, low blue
@@ -71,7 +71,10 @@ def is_object(img_array, object_name, threshhold_binary = 128, threshhold_differ
     # Save this image glacial_stone_array.astype(int) - img_array.astype(int)
     diff_image = np.abs(object_array.astype(int) - img_array.astype(int)).astype(np.uint8)
     diff_image_pil = Image.fromarray(diff_image)
-    diff_image_pil.save("diff_image.png")
+    try:
+        diff_image_pil.save("diff_image.png")
+    except Exception as e:
+        print("Error saving difference image:", e)
     if print_diff:
         print("Difference :", diff)
     
@@ -141,7 +144,7 @@ def check_next_enemy():
     
     center_x = 1800
     center_y = 150
-    radius = 25
+    radius = 15
     bbox_compass = (center_x - radius, center_y - radius, center_x + radius, center_y + radius) # (left, top, right, bottom)
     screenshot_compass = ImageGrab.grab(bbox=bbox_compass)
 

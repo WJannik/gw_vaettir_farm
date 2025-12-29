@@ -80,14 +80,14 @@ def bjora_marches2jaga_moraine():
     time.sleep(0.1)  # Wait for the area to load
     pick_up_selected_item(10.0)  # Wait longer for area change
 
-def jaga_moraine2jarnskeggi():
+def jaga_moraine2jarnskeggi(time_to_wait=7.5):
     print("Go from Jaga Moraine to Jarnskeggi")
     # Simulate pressing keys to set the area
     keyboard.press('v')
     time.sleep(0.01)
     keyboard.release('v')
-    time.sleep(0.1)  # Wait for the area to load
-    pick_up_selected_item(7.5)  # Wait longer for area change
+    time.sleep(0.01)  # Wait for the area to load
+    pick_up_selected_item(time_to_wait)  # Wait longer for area change
 
 def pick_up_norn_blessing():
     print("Picking up Norn Blessing")
@@ -154,7 +154,10 @@ def go_to_area_as_object(area = "sacred_altar"):
         # Save this image glacial_stone_array.astype(int) - img_array.astype(int)
         diff_image = np.abs(glacial_stone_array.astype(int) - img_array.astype(int)).astype(np.uint8)
         diff_image_pil = Image.fromarray(diff_image)
-        diff_image_pil.save("diff_image.png")
+        try:
+            diff_image_pil.save("diff_image.png")
+        except Exception as e:
+            print("Error saving difference image:", e)
         #print("Difference :", diff)
         
         return diff < 2000 # Below 2000 is considered a match
