@@ -6,6 +6,7 @@ import numpy as np
 
 
 import utils_item
+import utils_areas
 # Global flag to track if 'q' was pressed
 q_pressed = False
 e_pressed = False
@@ -30,7 +31,7 @@ def on_release(key):
         return False
 
 print("Starting the automation script in...")
-for i in range(5, 0, -1):
+for i in range(3, 0, -1):
     print(i)
     time.sleep(1)
 
@@ -40,6 +41,10 @@ keyboard = Controller()
 # Start the keyboard listener in a separate thread
 listener = Listener(on_press=on_press, on_release=on_release)
 listener.start()
+
+utils_areas.bjora_marches2jaga_moraine()  # Example call to set area
+utils_areas.jaga_moraine2jarnskeggi()  # Example call to set area
+utils_areas.pick_up_norn_blessing()  # Example call to pick up norn blessing
 
 def cast_shadowform():
     print("Casting Shadowform")
@@ -82,13 +87,22 @@ def cast_mantra_of_earth():
     keyboard.release('8')
 
 
-def cast_wastrels_demise():
-    # Get nearest enemy - placeholder for actual implementation by pressing c key
-    keyboard.press('c')
-    time.sleep(0.01)
-    keyboard.release('c')
-    time.sleep(0.05) # Wait for 0.05 second to ensure target
-    print("Casting Wastrel's Demise")
+def cast_wastrels_demise(nearest_enemy=True):
+    if nearest_enemy:
+        # Get nearest enemy - placeholder for actual implementation by pressing c key
+        keyboard.press('c')
+        time.sleep(0.01)
+        keyboard.release('c')
+        time.sleep(0.05) # Wait for 0.05 second to ensure target
+        print("Casting Wastrel's Demise on nearest enemy")
+    else:
+        print("Casting Wastrel's Demise on next target")
+        # Get next enemy by pressing tab key
+        keyboard.press(Key.tab)
+        time.sleep(0.01)
+        keyboard.release(Key.tab)
+        time.sleep(0.05)  # Small delay before casting
+
     # Simulate pressing key '7' with a small delay and hold it for 0.1 seconds
     keyboard.press('7')
     time.sleep(0.01)
@@ -97,17 +111,21 @@ def cast_wastrels_demise():
 
 # Get current time
 start_time = time.time()
+# Last cast times of spells
 last_shadowform_cast_time = 0
 last_shroud_of_distress_cast_time = 0
 last_ways_cast_time = 0
 last_wastrels_demise_cast_time = 0
+# Flags to track enchantment states and other flags
 shadowform_casted = False
 shroud_casted = False
 ways_casted = False
 mantra_casted = False
 start_spike = False
+nearest_enemy = True
 start_collecting = False
-counter = 0 
+# Counter for collecting items
+counter_irrelevant_items = 0 
 
 while True and time.time() - start_time < 240:
     time_passed_in_seconds = time.time() - start_time
@@ -116,7 +134,6 @@ while True and time.time() - start_time < 240:
     if ((time_passed_in_seconds - last_shadowform_cast_time)%20 > 0.0 and 
         (time_passed_in_seconds -  last_shadowform_cast_time)%20 < 2.0 
         and not shadowform_casted):
-        print("Casting shadowform at ", time_passed_in_seconds, time.time() - start_time)
         cast_shadowform()
         print("Casting shadowform at ", time_passed_in_seconds, time.time() - start_time)
         shadowform_casted = True
@@ -129,8 +146,8 @@ while True and time.time() - start_time < 240:
 
     # Cast Mantra of earth 3 seconds after shadowform was casted 
     if (not mantra_casted and time_passed_in_seconds> 20 and
-        time_passed_in_seconds - last_shadowform_cast_time > 3.0 and
-        time_passed_in_seconds - last_shadowform_cast_time < 5.5):
+        time_passed_in_seconds - last_shadowform_cast_time > 2.0 and
+        time_passed_in_seconds - last_shadowform_cast_time < 4.0):
         print("Casting Mantra of Earth at ", time_passed_in_seconds)
         cast_mantra_of_earth()
         mantra_casted = True
@@ -141,13 +158,13 @@ while True and time.time() - start_time < 240:
         mantra_casted = False
 
     # Cast Shroud of Distress every 50 seconds  after it was last casted
-    if ((time_passed_in_seconds - last_shroud_of_distress_cast_time)%50 > 1.2 and 
-        (time_passed_in_seconds - last_shroud_of_distress_cast_time)%50 < 4.9
+    if ((time_passed_in_seconds - last_shroud_of_distress_cast_time)%46 > 1.0 and 
+        (time_passed_in_seconds - last_shroud_of_distress_cast_time)%46 < 5.0
         and not shroud_casted):
         print("Casting Shroud of Distress at ", time_passed_in_seconds)
         cast_shroud_of_distress()
         shroud_casted = True
-        last_shroud_of_distress_cast_time = time_passed_in_seconds
+        last_shroud_of_distress_cast_time = time.time() - start_time
         # Go to next iteration to avoid double casting
         continue
     # Reset flags after 15 seconds
@@ -156,12 +173,12 @@ while True and time.time() - start_time < 240:
 
     # Cast Way of Perfection and Master every 30 seconds after it was last casted
     if ((time_passed_in_seconds - last_ways_cast_time)%30 > 1.0 and 
-        (time_passed_in_seconds - last_ways_cast_time)%30 < 4.9
+        (time_passed_in_seconds - last_ways_cast_time)%30 < 5.0
         and not ways_casted):
         print("Casting Way of Perfection and Master at ", time_passed_in_seconds)
         cast_way_of_perfection_and_master()
         ways_casted = True
-        last_ways_cast_time = time_passed_in_seconds
+        last_ways_cast_time = time.time() - start_time
         # Go to next iteration to avoid double casting
         continue
     # Reset flags after 15 seconds
@@ -176,24 +193,32 @@ while True and time.time() - start_time < 240:
     
     # If spike is started, cast Wastrel's Demise every 3 seconds but not 3 seconds after and before shadowform
     if start_spike:
-        if ((time_passed_in_seconds - last_shadowform_cast_time > 4.0 or last_shadowform_cast_time == 0) 
-            and (time_passed_in_seconds - last_wastrels_demise_cast_time >= 4.0)):
-            if not utils_item.check_next_item(enemy_check=True):
-                print("Collecting started by user")
-                start_collecting = True
-                counter = 0 
-                e_pressed = False  # Reset the flag so it doesn't trigger repeatedly
+        if ((time_passed_in_seconds - last_shadowform_cast_time > 3.0 or last_shadowform_cast_time == 0) 
+            and (time_passed_in_seconds - last_wastrels_demise_cast_time >= 3.0)):
+            if not utils_item.check_next_enemy():
+                # Wait 0.2 seconds before next check
+                time.sleep(0.2)
+                if not utils_item.check_next_enemy():
+                    print("Collecting started by user")
+                    start_collecting = True
+                    counter = 0 
+                    e_pressed = False  # Reset the flag so it doesn't trigger repeatedly
             print("Casting Wastrel's Demise at ", time_passed_in_seconds)
-            cast_wastrels_demise()
+            cast_wastrels_demise(nearest_enemy)
+            nearest_enemy = not nearest_enemy  # Alternate between nearest and next enemy
             last_wastrels_demise_cast_time = time_passed_in_seconds
     
-    if start_collecting and counter < 50:
+    if start_collecting and counter_irrelevant_items < 20:
         start_spike = False
-        counter += 1
-        utils_item.check_next_item()
-        time.sleep(0.3)  # Wait a bit before checking the next item
-    if counter >= 50:
-        # Programm finished collecting 50 items, stop the collecting process
+        if utils_item.check_next_item():
+            counter_irrelevant_items = 0  # Reset counter if an item of interest is found
+            print("Item of interest picked up!")
+            time.sleep(0.3)  # Wait a bit before checking the next item
+        else:
+            counter_irrelevant_items += 1
+            print("Irrelevant item encountered. Counter: ", counter_irrelevant_items)
+    if counter_irrelevant_items >= 20:
+        # Programm finished collecting 20 items, stop the collecting process
         print("Collecting finished")
         start_collecting = False
         break
@@ -202,3 +227,4 @@ while True and time.time() - start_time < 240:
 
     time.sleep(0.1)  # Sleep to prevent high CPU usage
 
+utils_areas.go2sacred_altar2jarnskeggi2bjora_marches()  # Example call to go to sacred altar area
