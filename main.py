@@ -77,7 +77,7 @@ def cast_shroud_of_distress():
     keyboard.press('3')
     time.sleep(0.01)
     keyboard.release('3')
-    time.sleep(1.25) # Wait for 1 second to simulate casting time
+    time.sleep(1.5) # Wait for 1 second to simulate casting time
 
 
 def cast_mantra_of_earth():
@@ -126,7 +126,7 @@ def cast_wastrels_demise(nearest_enemy=True):
         print("Casting Wastrel's Demise on nearest enemy")
     else:
         print("Casting Wastrel's Demise on next target")
-        for i in range(7):
+        for i in range(2):
             # Get next enemy by pressing tab key
             keyboard.press(Key.tab)
             time.sleep(0.02)
@@ -162,16 +162,15 @@ counter_irrelevant_items = 0
 dict_movement = {
     "move_forward_1": 10.0,
     "turn_right_1": 0.6,
-    "move_forward_2": 11.0,
-    "turn_right_2": 0.4,
-    "move_forward_3": 3.0,
-    "turn_right_3": 0.4,
-    "move_forward_4": 3.0,
-    "turn_right_4": 0.4,
-    "move_forward_5": 3.0,
-    "turn_right_5": 0.2,
-    "move_forward_6": 3.0,
-
+    "move_forward_2": 10.0,
+    #"turn_right_2": 0.3,
+    #"move_forward_3": 2.0,
+    #"turn_right_3": 0.3,
+    #"move_forward_4": 2.0,
+    #"turn_right_4": 0.3,
+    #"move_forward_5": 2.0,
+    #"turn_right_5": 0.3,
+    #"move_forward_6": 2.0,
 }
 start_movement = True
 final_state = False
@@ -180,7 +179,7 @@ current_movement_remaining = 0.0
 last_movement_time = 0
 movement_keys = list(dict_movement.keys())
 current_movement_index = 0
-movement_chunk_size = 1.0  # Split long movements into 1-second chunks
+movement_chunk_size = 1.0  # Split long movements into 0.5-second chunks
 
 
 # Get current time
@@ -188,7 +187,7 @@ start_time = time.time()
 
 while True and time.time() - start_time < 500:
     time_passed_in_seconds = time.time() - start_time
-    print("time passed: ", time_passed_in_seconds)
+    #print("time passed: ", time_passed_in_seconds)
     # Cast Shadowform every 20 seconds after it was last casted
     if ((time_passed_in_seconds - last_shadowform_cast_time)%20 > 0.0 and 
         (time_passed_in_seconds -  last_shadowform_cast_time)%20 < 2.0 
@@ -217,8 +216,8 @@ while True and time.time() - start_time < 500:
         mantra_casted = False
 
     # Cast Shroud of Distress every 50 seconds  after it was last casted
-    if ((time_passed_in_seconds - last_shroud_of_distress_cast_time)%46 > 0.5 and 
-        (time_passed_in_seconds - last_shroud_of_distress_cast_time)%46 < 2.5
+    if ((time_passed_in_seconds - last_shroud_of_distress_cast_time)%45 > 0.5 and 
+        (time_passed_in_seconds - last_shroud_of_distress_cast_time)%45 < 2.5
         and not shroud_casted):
         print("Casting Shroud of Distress at ", time_passed_in_seconds)
         cast_shroud_of_distress()
@@ -232,7 +231,7 @@ while True and time.time() - start_time < 500:
 
     # Cast Way of Perfection and Master every 30 seconds after it was last casted
     if ((time_passed_in_seconds - last_ways_cast_time)%30 > 0.5 and 
-        (time_passed_in_seconds - last_ways_cast_time)%30 < 3.5
+        (time_passed_in_seconds - last_ways_cast_time)%30 < 4.0
         and not ways_casted):
         print("Casting Way of Perfection and Master at ", time_passed_in_seconds)
         cast_way_of_perfection_and_master()
@@ -283,7 +282,7 @@ while True and time.time() - start_time < 500:
         break
     
 
-    if final_state:
+    if final_state and not start_spike and not start_collecting:
         if time.time() - last_movement_time > 15:
             # Enable spike flag after 15 seconds of no movement
             start_spike = True
@@ -330,9 +329,22 @@ while True and time.time() - start_time < 500:
                     start_movement = False
                     final_state = True
                     last_movement_time = time.time()
-    time.sleep(0.1)  # Sleep to prevent high CPU usage
 
+    # Start collecting after 240 seconds of runtime
+    if time_passed_in_seconds > 180 and not start_collecting:
+        print("Starting collecting after 180 seconds")
+        start_collecting = True
+        if start_spike:
+            start_spike = False  # Disable spike mode when starting collecting
+
+    time.sleep(0.025)  # Sleep to prevent high CPU usage
+
+
+# press x once 
+keyboard.press('x')
+time.sleep(0.01)
+keyboard.release('x')
 
 # Move forward 6 seconds to get into position for sacred altar
-move_forward(6.0)
+move_forward(8.0)
 utils_areas.go2sacred_altar2jarnskeggi2bjora_marches()  # Example call to go to sacred altar area

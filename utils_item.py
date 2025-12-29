@@ -31,13 +31,13 @@ def is_color(img_array, color_name, r_min=0, r_max=255, g_min=0, g_max=255, b_mi
     print(f"{color_name.capitalize()} pixels found: {pixel_count}")
     return pixel_count > pixel_threshold
 
-def is_red(img_array):
+def is_red(img_array, pixel_threshold=25):
     # Red is typically high red, low green and blue
-    return is_color(img_array, "red", r_min=200, r_max=255, g_min=0, g_max=100, b_min=0, b_max=100, pixel_threshold=50)
+    return is_color(img_array, "red", r_min=200, r_max=255, g_min=0, g_max=100, b_min=0, b_max=100, pixel_threshold=pixel_threshold)
 
-def is_yellow(img_array):
+def is_yellow(img_array, pixel_threshold=20):
     # Yellow is typically high red and green, low blue
-    return is_color(img_array, "yellow", r_min=200, r_max=255, g_min=200, g_max=255, b_min=0, b_max=100, pixel_threshold=20)
+    return is_color(img_array, "yellow", r_min=200, r_max=255, g_min=200, g_max=255, b_min=0, b_max=100, pixel_threshold=pixel_threshold)
 
 def is_purple(img_array):
     # Purple is typically high red and blue, low green
@@ -91,7 +91,10 @@ def check_next_item():
     screenshot = ImageGrab.grab(bbox=bbox)
     
     # Save the screenshot (optional - for debugging)
-    screenshot.save("item_check.png")
+    try:
+        screenshot.save("item_check.png")
+    except Exception as e:
+        print("Error saving item check screenshot:", e)
     
     # Convert to numpy array for color analysis
     img_array = np.array(screenshot)
@@ -136,17 +139,29 @@ def check_next_enemy():
     bbox = (860, 55, 1040, 70) # (left, top, right, bottom)
     screenshot = ImageGrab.grab(bbox=bbox)
     
+    center_x = 1800
+    center_y = 150
+    radius = 25
+    bbox_compass = (center_x - radius, center_y - radius, center_x + radius, center_y + radius) # (left, top, right, bottom)
+    screenshot_compass = ImageGrab.grab(bbox=bbox_compass)
+
     # Save the screenshot (optional - for debugging)
     screenshot.save("enemy_check.png")
-    
+    screenshot_compass.save("enemy_check_compass.png")
     # Convert to numpy array for color analysis
     img_array = np.array(screenshot)
+    img_array_compass = np.array(screenshot_compass)
     
-    if (is_object(img_array, "vaettir_no_hp", 180, 4000,True) or 
-        is_object(img_array, "vaettir_full_hp", 180, 4000,True) or 
-        is_red(img_array)):
-        print("Enemy detected! Skipping pickup.")
-        return True
+    if is_red(img_array_compass,1) or is_yellow(img_array_compass,1):
+        print("Enemy detected on compass! Skipping pickup.")
+        if (is_object(img_array, "vaettir_no_hp", 180, 4000,True) or 
+            is_object(img_array, "vaettir_full_hp", 180, 4000,True) or 
+            is_red(img_array)):
+            print("Enemy detected! Skipping pickup.")
+            return True
+        else:
+            print("False alarm, no enemy detected in main area.")
+            return False
     else:
         print("No enemy detected.")
         return False
