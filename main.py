@@ -46,6 +46,7 @@ utils_areas.bjora_marches2jaga_moraine()  # Example call to set area
 utils_areas.jaga_moraine2jarnskeggi()  # Example call to set area
 utils_areas.pick_up_norn_blessing()  # Example call to pick up norn blessing
 
+
 def cast_shadowform():
     print("Casting Shadowform")
     # Simulate pressing keys '1' and '2' with a small delay and hold it for 0.1 seconds
@@ -86,6 +87,34 @@ def cast_mantra_of_earth():
     time.sleep(0.01)
     keyboard.release('8')
 
+def move_forward(duration):
+    """Move forward for specified duration"""
+    print(f"Moving forward for {duration} seconds")
+    keyboard.press('w')
+    time.sleep(duration)
+    keyboard.release('w')
+
+def move_backward(duration):
+    """Move backward for specified duration"""
+    print(f"Moving backward for {duration} seconds")
+    keyboard.press('s')
+    time.sleep(duration)
+    keyboard.release('s')
+
+def turn_left(duration):
+    """Turn left for specified duration"""
+    print(f"Turning left for {duration} seconds")
+    keyboard.press('a')
+    time.sleep(duration)
+    keyboard.release('a')
+
+def turn_right(duration):
+    """Turn right for specified duration"""
+    print(f"Turning right for {duration} seconds")
+    keyboard.press('d')
+    time.sleep(duration)
+    keyboard.release('d')
+
 
 def cast_wastrels_demise(nearest_enemy=True):
     if nearest_enemy:
@@ -97,10 +126,11 @@ def cast_wastrels_demise(nearest_enemy=True):
         print("Casting Wastrel's Demise on nearest enemy")
     else:
         print("Casting Wastrel's Demise on next target")
-        # Get next enemy by pressing tab key
-        keyboard.press(Key.tab)
-        time.sleep(0.01)
-        keyboard.release(Key.tab)
+        for i in range(7):
+            # Get next enemy by pressing tab key
+            keyboard.press(Key.tab)
+            time.sleep(0.02)
+            keyboard.release(Key.tab)
         time.sleep(0.05)  # Small delay before casting
 
     # Simulate pressing key '7' with a small delay and hold it for 0.1 seconds
@@ -109,8 +139,6 @@ def cast_wastrels_demise(nearest_enemy=True):
     keyboard.release('7')
     time.sleep(0.5) # Wait for 0.5 second to simulate casting time
 
-# Get current time
-start_time = time.time()
 # Last cast times of spells
 last_shadowform_cast_time = 0
 last_shroud_of_distress_cast_time = 0
@@ -127,7 +155,38 @@ start_collecting = False
 # Counter for collecting items
 counter_irrelevant_items = 0 
 
-while True and time.time() - start_time < 240:
+
+# Move 4 second before starting the main loop
+#move_forward(4.0)
+# Movement configuration and state tracking
+dict_movement = {
+    "move_forward_1": 10.0,
+    "turn_right_1": 0.6,
+    "move_forward_2": 11.0,
+    "turn_right_2": 0.4,
+    "move_forward_3": 3.0,
+    "turn_right_3": 0.4,
+    "move_forward_4": 3.0,
+    "turn_right_4": 0.4,
+    "move_forward_5": 3.0,
+    "turn_right_5": 0.2,
+    "move_forward_6": 3.0,
+
+}
+start_movement = True
+final_state = False
+current_movement_key = None
+current_movement_remaining = 0.0
+last_movement_time = 0
+movement_keys = list(dict_movement.keys())
+current_movement_index = 0
+movement_chunk_size = 1.0  # Split long movements into 1-second chunks
+
+
+# Get current time
+start_time = time.time()
+
+while True and time.time() - start_time < 500:
     time_passed_in_seconds = time.time() - start_time
     print("time passed: ", time_passed_in_seconds)
     # Cast Shadowform every 20 seconds after it was last casted
@@ -141,25 +200,25 @@ while True and time.time() - start_time < 240:
         # Go to next iteration to avoid double casting
         continue
     # Reset flags after 15 seconds
-    if shadowform_casted and time_passed_in_seconds - last_shadowform_cast_time >= 19.5:
+    if shadowform_casted and time_passed_in_seconds - last_shadowform_cast_time >= 2.1:
         shadowform_casted = False
 
-    # Cast Mantra of earth 3 seconds after shadowform was casted 
+    # Cast Mantra of earth 2 seconds after shadowform was casted 
     if (not mantra_casted and time_passed_in_seconds> 20 and
-        time_passed_in_seconds - last_shadowform_cast_time > 2.0 and
-        time_passed_in_seconds - last_shadowform_cast_time < 4.0):
+        time_passed_in_seconds - last_shadowform_cast_time > 1.0 and
+        time_passed_in_seconds - last_shadowform_cast_time < 3.0):
         print("Casting Mantra of Earth at ", time_passed_in_seconds)
         cast_mantra_of_earth()
         mantra_casted = True
         # Go to next iteration to avoid double casting
         continue
-    # Reset mantra_casted flag after 15 seconds
-    if mantra_casted and time_passed_in_seconds - last_shadowform_cast_time >= 15:
+    # Reset mantra_casted flag after 0.5 seconds
+    if mantra_casted and time_passed_in_seconds - last_shadowform_cast_time >= 3.5:
         mantra_casted = False
 
     # Cast Shroud of Distress every 50 seconds  after it was last casted
-    if ((time_passed_in_seconds - last_shroud_of_distress_cast_time)%46 > 1.0 and 
-        (time_passed_in_seconds - last_shroud_of_distress_cast_time)%46 < 5.0
+    if ((time_passed_in_seconds - last_shroud_of_distress_cast_time)%46 > 0.5 and 
+        (time_passed_in_seconds - last_shroud_of_distress_cast_time)%46 < 2.5
         and not shroud_casted):
         print("Casting Shroud of Distress at ", time_passed_in_seconds)
         cast_shroud_of_distress()
@@ -168,12 +227,12 @@ while True and time.time() - start_time < 240:
         # Go to next iteration to avoid double casting
         continue
     # Reset flags after 15 seconds
-    if shroud_casted and time_passed_in_seconds - last_shroud_of_distress_cast_time >= 15:
+    if shroud_casted and time_passed_in_seconds - last_shroud_of_distress_cast_time >= 2.5:
         shroud_casted = False
 
     # Cast Way of Perfection and Master every 30 seconds after it was last casted
-    if ((time_passed_in_seconds - last_ways_cast_time)%30 > 1.0 and 
-        (time_passed_in_seconds - last_ways_cast_time)%30 < 5.0
+    if ((time_passed_in_seconds - last_ways_cast_time)%30 > 0.5 and 
+        (time_passed_in_seconds - last_ways_cast_time)%30 < 3.5
         and not ways_casted):
         print("Casting Way of Perfection and Master at ", time_passed_in_seconds)
         cast_way_of_perfection_and_master()
@@ -181,8 +240,8 @@ while True and time.time() - start_time < 240:
         last_ways_cast_time = time.time() - start_time
         # Go to next iteration to avoid double casting
         continue
-    # Reset flags after 15 seconds
-    if ways_casted and time_passed_in_seconds - last_ways_cast_time >= 15:
+    # Reset flags after 4 seconds
+    if ways_casted and time_passed_in_seconds - last_ways_cast_time >= 3.5:
         ways_casted = False
 
     # If I press 'q' while the script runs, set the start_spike flag to True
@@ -222,9 +281,58 @@ while True and time.time() - start_time < 240:
         print("Collecting finished")
         start_collecting = False
         break
-        
-        
+    
 
+    if final_state:
+        if time.time() - last_movement_time > 15:
+            # Enable spike flag after 15 seconds of no movement
+            start_spike = True
+            print("No movement for 15 seconds, enabling spike mode")
+
+    # Handle movement when not casting spells and not collecting
+    if (start_movement and not start_collecting and not start_spike and 
+        current_movement_index < len(movement_keys) and
+        not shadowform_casted and not shroud_casted and not ways_casted):
+        
+        # Initialize new movement if needed
+        if current_movement_key is None:
+            current_movement_key = movement_keys[current_movement_index]
+            current_movement_remaining = dict_movement[current_movement_key]
+            print(f"Starting movement: {current_movement_key} for {current_movement_remaining} seconds")
+        
+        # Execute movement in chunks
+        if current_movement_remaining > 0:
+            # Determine chunk duration (smaller of remaining time or chunk size)
+            chunk_duration = min(current_movement_remaining, movement_chunk_size)
+            
+            # Execute the appropriate movement
+            if "move_forward" in current_movement_key:
+                move_forward(chunk_duration)
+            elif "move_backward" in current_movement_key:
+                move_backward(chunk_duration)
+            elif "turn_left" in current_movement_key:
+                turn_left(chunk_duration)
+            elif "turn_right" in current_movement_key:
+                turn_right(chunk_duration)
+            
+            # Update remaining time
+            current_movement_remaining -= chunk_duration
+            
+            # If movement is complete, move to next movement
+            if current_movement_remaining <= 0:
+                print(f"Completed movement: {current_movement_key}")
+                current_movement_index += 1
+                current_movement_key = None
+                
+                # Check if all movements are complete
+                if current_movement_index >= len(movement_keys):
+                    print("All movements completed")
+                    start_movement = False
+                    final_state = True
+                    last_movement_time = time.time()
     time.sleep(0.1)  # Sleep to prevent high CPU usage
 
+
+# Move forward 6 seconds to get into position for sacred altar
+move_forward(6.0)
 utils_areas.go2sacred_altar2jarnskeggi2bjora_marches()  # Example call to go to sacred altar area

@@ -58,9 +58,11 @@ def is_object(img_array, object_name, threshhold_binary = 128, threshhold_differ
     # Save masks as images
     mask_reference_img = Image.fromarray((mask_reference * 255).astype(np.uint8))
     mask_test_img = Image.fromarray((mask_test * 255).astype(np.uint8))
-    
-    mask_reference_img.save("mask_reference.png")
-    mask_test_img.save("mask_test.png")
+    try:
+        mask_reference_img.save("mask_reference.png")
+        mask_test_img.save("mask_test.png")
+    except Exception as e:
+        print("Error saving mask images:", e)
     #print("Masks saved as mask_reference.png and mask_test.png")
 
     # Compute the difference

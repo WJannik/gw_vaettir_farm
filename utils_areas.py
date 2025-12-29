@@ -135,7 +135,7 @@ def go_to_area_as_object(area = "sacred_altar"):
         """ Compare the cropped area with the image with name item_city.png """
         glacial_stone_reference = Image.open(f"assets/areas/item_{area_name}.png")
         glacial_stone_array = np.array(glacial_stone_reference)
-        print(np.shape(img_array), np.shape(glacial_stone_array))
+        #print(np.shape(img_array), np.shape(glacial_stone_array))
         # Compare arrays by looking at their norm only at values which are not black i.e. are bighter than 50 on average
         mask_reference = np.sum(glacial_stone_array, axis=-1) > 128
         mask_test = np.sum(img_array, axis=-1) > 128
@@ -146,7 +146,7 @@ def go_to_area_as_object(area = "sacred_altar"):
         
         mask_reference_img.save("mask_reference.png")
         mask_test_img.save("mask_test.png")
-        print("Masks saved as mask_reference.png and mask_test.png")
+        #print("Masks saved as mask_reference.png and mask_test.png")
 
         # Compute the difference
         diff = np.linalg.norm(glacial_stone_array.astype(int) - img_array.astype(int))
@@ -155,7 +155,7 @@ def go_to_area_as_object(area = "sacred_altar"):
         diff_image = np.abs(glacial_stone_array.astype(int) - img_array.astype(int)).astype(np.uint8)
         diff_image_pil = Image.fromarray(diff_image)
         diff_image_pil.save("diff_image.png")
-        print("Difference :", diff)
+        #print("Difference :", diff)
         
         return diff < 2000 # Below 2000 is considered a match
     
@@ -182,4 +182,31 @@ if __name__ == "__main__":
         bjora_marches2jaga_moraine()  # Example call to set area
         jaga_moraine2jarnskeggi()  # Example call to set area
         pick_up_norn_blessing()  # Example call to pick up norn blessing
-    go2sacred_altar2jarnskeggi2bjora_marches()  # Example call to go to sacred altar area
+
+    # Hold d to turn right
+    keyboard.press('d')
+    time.sleep(0.4)  # Turn for 0.4 seconds
+    keyboard.release('d')
+    time.sleep(0.01)  # Wait a moment for the UI to update
+
+    # Press w for moving forwardö 
+    keyboard.press('w')
+    time.sleep(9.0)
+    keyboard.release('w')
+    time.sleep(0.01)  # Wait a moment for the UI to update
+
+    # Hold d to turn right
+    keyboard.press('d')
+    time.sleep(0.8)  # Turn for 0.8 seconds
+    keyboard.release('d')
+    time.sleep(0.01)  # Wait a moment for the UI to update
+
+    # Press w to move forward againxy
+    keyboard.press('w')
+    time.sleep(15)
+    keyboard.release('w')
+    time.sleep(0.01)  # Wait a moment for the UI to update
+
+
+    if False:
+        go2sacred_altar2jarnskeggi2bjora_marches()  # Example call to go to sacred altar area
