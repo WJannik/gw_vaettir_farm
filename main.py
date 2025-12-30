@@ -118,7 +118,11 @@ def cast_wastrels_demise(nearest_enemy=True):
     keyboard.press('7')
     time.sleep(0.01)
     keyboard.release('7')
-    time.sleep(0.5) # Wait for 0.5 second to simulate casting time
+    time.sleep(0.3) # Wait for 0.3 second to simulate casting time
+    keyboard.press('6')
+    time.sleep(0.01)
+    keyboard.release('6')
+    time.sleep(0.3) # Wait for 0.3 second to simulate casting time
 
 # Global flag to track if 'q' was pressed
 q_pressed = False
@@ -162,7 +166,7 @@ for i in range(10):
     # Movement configuration and state tracking
     dict_movement = {
         "move_forward_1": 10.0,
-        "turn_right_1": 0.6,
+        "turn_right_1": 1.0,
         "move_forward_2": 10.0,
         #"turn_right_2": 0.3,
         #"move_forward_3": 2.0,
@@ -274,7 +278,7 @@ for i in range(10):
                 nearest_enemy = not nearest_enemy  # Alternate between nearest and next enemy
                 last_wastrels_demise_cast_time = time_passed_in_seconds
         
-        if start_collecting and counter_irrelevant_items < 20:
+        if start_collecting and counter_irrelevant_items < 10:
             start_spike = False
             if utils_item.check_next_item():
                 counter_irrelevant_items = 0  # Reset counter if an item of interest is found
@@ -283,8 +287,8 @@ for i in range(10):
             else:
                 counter_irrelevant_items += 1
                 print("Irrelevant item encountered. Counter: ", counter_irrelevant_items)
-        if counter_irrelevant_items >= 20:
-            # Programm finished collecting 20 items, stop the collecting process
+        if counter_irrelevant_items >= 10:
+            # Programm finished collecting 10 items, stop the collecting process
             print("Collecting finished")
             start_collecting = False
             break
