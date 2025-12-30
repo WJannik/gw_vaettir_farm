@@ -95,7 +95,7 @@ def pick_up_norn_blessing():
     click_at_position(900, 575)
 
 def pick_up_selected_item(waiting_item_seconds=1.0):
-    print("Picking up item")
+    #print("Picking up item")
     keyboard.press(Key.space)
     time.sleep(0.01)
     keyboard.release(Key.space)
@@ -111,9 +111,6 @@ def go2sacred_altar2jarnskeggi2bjora_marches():
 
 
 def go_to_area_as_object(area = "sacred_altar"):
-
-    # Check if the item is of interesst. This includes yellow items, glacial stone, mesmer tomes, etc.
-    print("Checking for yellow item")
     # Simulate pressing key 'ä' to check the next itemitem
     keyboard.press('ä')
     time.sleep(0.01)

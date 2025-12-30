@@ -7,6 +7,7 @@ import numpy as np
 
 import utils_item
 import utils_areas
+import utils_energy_management
 
 # Keyboard listener function
 def on_press(key):
@@ -134,7 +135,7 @@ keyboard = Controller()
 # Start the keyboard listener in a separate thread
 listener = Listener(on_press=on_press, on_release=on_release)
 listener.start()
-for i in range(10):
+for i in range(15):
     print("Starting the automation script in...")
     for i in range(3, 0, -1):
         print(i)
@@ -272,6 +273,12 @@ for i in range(10):
                         start_collecting = True
                         counter = 0 
                         e_pressed = False  # Reset the flag so it doesn't trigger repeatedly
+                # Check if mana is above 50% before casting
+                energy_img_array = utils_energy_management.get_energy_level()
+                if energy_img_array < 50.0:
+                    print("Mana below 50%, skipping Wastrel's Demise cast")
+                    print("Current mana: ", energy_img_array)
+                    continue
                 print("Casting Wastrel's Demise at ", time_passed_in_seconds)
                 if utils_item.check_next_enemy():
                     cast_wastrels_demise(True)
@@ -358,7 +365,7 @@ for i in range(10):
     keyboard.release('x')
 
     # Move forward 5 seconds to get back
-    move_forward(5.0)
+    move_forward(7.0)
     utils_areas.jaga_moraine2jarnskeggi(12.0)  # Example call to go to jarnskeggi area
     utils_areas.bjora_marches2jaga_moraine() # Works also the other way around
     #utils_areas.go2sacred_altar2jarnskeggi2bjora_marches()  # Example call to go to sacred altar area
