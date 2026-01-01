@@ -149,8 +149,11 @@ def check_next_enemy():
     screenshot_compass = ImageGrab.grab(bbox=bbox_compass)
 
     # Save the screenshot (optional - for debugging)
-    screenshot.save("enemy_check.png")
-    screenshot_compass.save("enemy_check_compass.png")
+    try:
+        screenshot.save("enemy_check.png")
+        screenshot_compass.save("enemy_check_compass.png")
+    except Exception as e:
+        print("Error saving enemy check screenshots:", e)
     # Convert to numpy array for color analysis
     img_array = np.array(screenshot)
     img_array_compass = np.array(screenshot_compass)
