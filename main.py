@@ -9,65 +9,11 @@ import utils_item
 import utils_areas
 import utils_energy_management
 from utils_skill_management import cast_shadowform, cast_way_of_perfection_and_master, cast_shroud_of_distress, cast_mantra_of_earth,cast_spike
-
-# Keyboard listener function
-def on_press(key):
-    global q_pressed, e_pressed
-    try:
-        if key.char == 'q':
-            print("Q key detected!")
-            q_pressed = True
-        if key.char == 'e':
-            print("E key detected!")
-            e_pressed = True
-    except AttributeError:
-        # Special keys (like ctrl, alt, etc.) don't have a char attribute
-        pass
-
-def on_release(key):
-    # Stop listener on ESC key
-    if key == Key.esc:
-        print("ESC pressed - stopping listener")
-        return False
-
-def move_forward(duration):
-    """Move forward for specified duration"""
-    print(f"Moving forward for {duration} seconds")
-    keyboard.press('w')
-    time.sleep(duration)
-    keyboard.release('w')
-
-def move_backward(duration):
-    """Move backward for specified duration"""
-    print(f"Moving backward for {duration} seconds")
-    keyboard.press('s')
-    time.sleep(duration)
-    keyboard.release('s')
-
-def turn_left(duration):
-    """Turn left for specified duration"""
-    print(f"Turning left for {duration} seconds")
-    keyboard.press('a')
-    time.sleep(duration)
-    keyboard.release('a')
-
-def turn_right(duration):
-    """Turn right for specified duration"""
-    print(f"Turning right for {duration} seconds")
-    keyboard.press('d')
-    time.sleep(duration)
-    keyboard.release('d')
-
-# Global flag to track if 'q' was pressed
-q_pressed = False
-e_pressed = False
+from utils_movement import move_forward, execute_chunk_of_movement
 
 # Create a keyboard controller
 keyboard = Controller()
 
-# Start the keyboard listener in a separate thread
-listener = Listener(on_press=on_press, on_release=on_release)
-listener.start()
 for i in range(25):
     print("Starting the automation script in...")
     for i in range(3, 0, -1):
@@ -93,7 +39,7 @@ for i in range(25):
     start_collecting = False
     # Counter for collecting items
     counter_irrelevant_items = 0 
-    
+
     # Movement configuration and state tracking
     dict_movement = {
         "move_forward_1": 10.0,
@@ -117,7 +63,7 @@ for i in range(25):
         time_passed_in_seconds = time.time() - start_time
         #print("time passed: ", time_passed_in_seconds)
         # Cast Shadowform every 20 seconds after it was last casted
-        if ((time_passed_in_seconds - last_shadowform_cast_time)%20 > 0.0 and 
+        if ((time_passed_in_seconds - last_shadowform_cast_time)%20 >= 0.0 and 
             (time_passed_in_seconds -  last_shadowform_cast_time)%20 < 2.0 
             and not shadowform_casted):
             cast_shadowform()
@@ -182,8 +128,8 @@ for i in range(25):
             if ((time_passed_in_seconds - last_shadowform_cast_time > 3.0 or last_shadowform_cast_time == 0) 
                 and (time_passed_in_seconds - last_wastrels_demise_cast_time >= 3.0)):
                 if not utils_item.check_next_enemy():
-                    # Wait 0.2ö  seconds before next check
-                    time.sleep(0.2)
+                    # Wait 0.1  seconds before next check
+                    time.sleep(0.1)
                     if not utils_item.check_next_enemy():
                         print("Collecting since no enemies detected")
                         start_collecting = True
@@ -201,6 +147,7 @@ for i in range(25):
                     cast_spike(True)
                 nearest_enemy = not nearest_enemy  # Alternate between nearest and next enemy
                 last_wastrels_demise_cast_time = time_passed_in_seconds
+                continue
         
         if start_collecting and counter_irrelevant_items < 10:
             start_spike = False
@@ -237,22 +184,8 @@ for i in range(25):
             
             # Execute movement in chunks
             if current_movement_remaining > 0:
-                # Determine chunk duration (smaller of remaining time or chunk size)
-                chunk_duration = min(current_movement_remaining, movement_chunk_size)
-                
-                # Execute the appropriate movement
-                if "move_forward" in current_movement_key:
-                    move_forward(chunk_duration)
-                elif "move_backward" in current_movement_key:
-                    move_backward(chunk_duration)
-                elif "turn_left" in current_movement_key:
-                    turn_left(chunk_duration)
-                elif "turn_right" in current_movement_key:
-                    turn_right(chunk_duration)
-                
-                # Update remaining time
-                current_movement_remaining -= chunk_duration
-                
+                current_movement_remaining = execute_chunk_of_movement(current_movement_key, current_movement_remaining, movement_chunk_size)
+
                 # If movement is complete, move to next movement
                 if current_movement_remaining <= 0:
                     print(f"Completed movement: {current_movement_key}")

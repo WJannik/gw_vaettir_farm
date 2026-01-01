@@ -1,1 +1,1 @@
-AFTERCAST_DELAY = 0.85 # Delay after casting a skill, in seconds based on this article https://wiki.guildwars.com/wiki/Aftercast_delay
+AFTERCAST_DELAY = 0.75 # Delay after casting a skill, in seconds based on this article https://wiki.guildwars.com/wiki/Aftercast_delay

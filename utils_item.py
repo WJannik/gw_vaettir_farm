@@ -160,8 +160,8 @@ def check_next_enemy():
     
     if is_red(img_array_compass,1) or is_yellow(img_array_compass,1):
         print("Enemy detected on compass! Skipping pickup.")
-        if (is_object(img_array, "vaettir_no_hp", 180, 4000,True) or 
-            is_object(img_array, "vaettir_full_hp", 180, 4000,True) or 
+        if (is_object(img_array, "vaettir_no_hp", 180, 6000,True) or 
+            is_object(img_array, "vaettir_full_hp", 180, 6000,True) or 
             is_red(img_array)):
             print("Enemy detected! Skipping pickup.")
             return True
