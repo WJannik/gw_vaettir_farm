@@ -130,38 +130,42 @@ def check_next_item():
         return False  # Not an item of interest
     return True  # Item of interest picked up
 
-def check_next_enemy():
+def check_next_enemy(use_only_compass=False):
     """Check if there is an enemy in the next position."""
-    # Simulate pressing key 'c' to check the next enemy
-    keyboard.press('c')
-    time.sleep(0.01)
-    keyboard.release('c')
-    time.sleep(0.01)  # Wait a moment for the UI to update
+    if not use_only_compass:
+        # Simulate pressing key 'c' to check the next enemy
+        keyboard.press('c')
+        time.sleep(0.01)
+        keyboard.release('c')
+        time.sleep(0.01)  # Wait a moment for the UI to update
+        # Take a screenshot of a specific region (left, top, right, bottom)
+        bbox = (860, 55, 1040, 70) # (left, top, right, bottom)
+        screenshot = ImageGrab.grab(bbox=bbox)
     
-    # Take a screenshot of a specific region (left, top, right, bottom)
-    bbox = (860, 55, 1040, 70) # (left, top, right, bottom)
-    screenshot = ImageGrab.grab(bbox=bbox)
-    
-    center_x = 1800
-    center_y = 150
-    radius = 15
+    center_x = 1798
+    center_y = 153
+    radius = 20
     bbox_compass = (center_x - radius, center_y - radius, center_x + radius, center_y + radius) # (left, top, right, bottom)
     screenshot_compass = ImageGrab.grab(bbox=bbox_compass)
 
     # Save the screenshot (optional - for debugging)
     try:
-        screenshot.save("enemy_check.png")
+        if not use_only_compass:
+            screenshot.save("enemy_check.png")
         screenshot_compass.save("enemy_check_compass.png")
     except Exception as e:
         print("Error saving enemy check screenshots:", e)
     # Convert to numpy array for color analysis
-    img_array = np.array(screenshot)
+    if not use_only_compass:
+        img_array = np.array(screenshot)
     img_array_compass = np.array(screenshot_compass)
     
     if is_red(img_array_compass,1) or is_yellow(img_array_compass,1):
         print("Enemy detected on compass! Skipping pickup.")
-        if (is_object(img_array, "vaettir_no_hp", 180, 6000,True) or 
-            is_object(img_array, "vaettir_full_hp", 180, 6000,True) or 
+        if use_only_compass:
+            return True
+        if (is_object(img_array, "vaettir_no_hp", 180, 6000,False) or 
+            is_object(img_array, "vaettir_full_hp", 180, 6000,False) or 
             is_red(img_array)):
             print("Enemy detected! Skipping pickup.")
             return True

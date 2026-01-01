@@ -45,3 +45,48 @@ def execute_chunk_of_movement(current_movement_key, current_movement_remaining,m
     elif "turn_right" in current_movement_key:
         turn_right(chunk_duration)
     return current_movement_remaining - chunk_duration
+
+def handle_movement_sequence(movement_dict, current_movement_key, current_movement_remaining, 
+                           current_movement_index, movement_chunk_size, movement_type="forward"):
+    """
+    Handle a sequence of movements from a movement dictionary.
+    
+    Args:
+        movement_dict: Dictionary containing movement keys and durations
+        current_movement_key: Current movement being executed (None if starting new)
+        current_movement_remaining: Remaining time for current movement
+        current_movement_index: Index of current movement in sequence
+        movement_chunk_size: Size of movement chunks in seconds
+        movement_type: Type of movement for logging ("forward" or "reverse")
+    
+    Returns:
+        tuple: (new_movement_key, new_remaining_time, new_index, sequence_complete)
+    """
+    movement_keys = list(movement_dict.keys())
+    
+    # Check if we've completed all movements
+    if current_movement_index >= len(movement_keys):
+        return None, 0.0, current_movement_index, True
+    
+    # Initialize new movement if needed
+    if current_movement_key is None:
+        current_movement_key = movement_keys[current_movement_index]
+        current_movement_remaining = movement_dict[current_movement_key]
+        print(f"Starting {movement_type} movement: {current_movement_key} for {current_movement_remaining} seconds")
+    
+    # Execute movement in chunks
+    if current_movement_remaining > 0:
+        current_movement_remaining = execute_chunk_of_movement(current_movement_key, current_movement_remaining, movement_chunk_size)
+        
+        # If movement is complete, move to next movement
+        if current_movement_remaining <= 0:
+            print(f"Completed {movement_type} movement: {current_movement_key}")
+            current_movement_index += 1
+            current_movement_key = None
+            
+            # Check if all movements are complete
+            if current_movement_index >= len(movement_keys):
+                print(f"All {movement_type} movements completed")
+                return None, 0.0, current_movement_index, True
+    
+    return current_movement_key, current_movement_remaining, current_movement_index, False
