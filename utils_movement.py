@@ -6,28 +6,28 @@ keyboard = Controller()
 
 def move_forward(duration):
     """Move forward for specified duration"""
-    print(f"Moving forward for {duration} seconds")
+    #print(f"Moving forward for {duration} seconds")
     keyboard.press('w')
     time.sleep(duration)
     keyboard.release('w')
 
 def move_backward(duration):
     """Move backward for specified duration"""
-    print(f"Moving backward for {duration} seconds")
+    #print(f"Moving backward for {duration} seconds")
     keyboard.press('s')
     time.sleep(duration)
     keyboard.release('s')
 
 def turn_left(duration):
     """Turn left for specified duration"""
-    print(f"Turning left for {duration} seconds")
+    #print(f"Turning left for {duration} seconds")
     keyboard.press('a')
     time.sleep(duration)
     keyboard.release('a')
 
 def turn_right(duration):
     """Turn right for specified duration"""
-    print(f"Turning right for {duration} seconds")
+    #print(f"Turning right for {duration} seconds")
     keyboard.press('d')
     time.sleep(duration)
     keyboard.release('d')

@@ -1,12 +1,18 @@
 from pynput.keyboard import Key, Listener, Controller
 import time
+import threading
+from PIL import ImageGrab
+import numpy as np
+
 
 import utils_item
+import utils_enemy
 import utils_areas
 import utils_energy_management
-from utils_skill_management import cast_shadowform, cast_way_of_perfection_and_master, cast_shroud_of_distress, cast_mantra_of_earth,cast_spike
+from utils_skill_management import *
 from utils_movement import handle_movement_sequence
 from constants import NUMBER_OF_RUNS, MOVEMENT_CHUNK_SIZE
+from utils_general import generate_bbox, capture_and_process_region, is_object
 # Create a keyboard controller
 keyboard = Controller()
 
@@ -25,7 +31,6 @@ for run_number in range(NUMBER_OF_RUNS):
     last_shroud_of_distress_cast_time = 0
     last_ways_cast_time = 0
     last_spike_cast_time = 0
-
     # Flags to track enchanments 
     shadowform_casted = False
     shroud_casted = False
@@ -48,7 +53,7 @@ for run_number in range(NUMBER_OF_RUNS):
     # Movement configuration and state tracking
     dict_movement_forwards = {
         "move_forward_1": 10.0,
-        "turn_right_1": 0.65,
+        "turn_right_1": 0.6,
         "move_forward_2": 11.0,
     }
     dict_movement_backward = {
@@ -85,10 +90,10 @@ for run_number in range(NUMBER_OF_RUNS):
         if shadowform_casted and time_passed_in_seconds - last_shadowform_cast_time >= 18.0:
             shadowform_casted = False
 
-        # Cast Mantra of earth 2 seconds after shadowform was casted 
+        # Cast Mantra of earth at least 2 seconds after shadowform was casted 
         if (not mantra_casted and time_passed_in_seconds> 20 and
-            time_passed_in_seconds - last_shadowform_cast_time > 0.0 and
-            time_passed_in_seconds - last_shadowform_cast_time < 2.0
+            time_passed_in_seconds - last_shadowform_cast_time > 1.0 and
+            time_passed_in_seconds - last_shadowform_cast_time < 3.0
             and not minimal_enchantment_maintained):
             cast_mantra_of_earth()
             mantra_casted = True
@@ -100,8 +105,7 @@ for run_number in range(NUMBER_OF_RUNS):
 
         # Cast Shroud of Distress every 45 seconds  after it was last casted
         if ((time_passed_in_seconds - last_shroud_of_distress_cast_time)%45 > 0.0 
-            #(time_passed_in_seconds - last_shroud_of_distress_cast_time)%45 < 45.0
-            and not shroud_casted and not minimal_enchantment_maintained):
+            and not shroud_casted):
             cast_shroud_of_distress()
             shroud_casted = True
             last_shroud_of_distress_cast_time = time.time() - start_time
@@ -113,8 +117,7 @@ for run_number in range(NUMBER_OF_RUNS):
 
         # Cast Way of Perfection and Master every 30 seconds after it was last casted
         if ((time_passed_in_seconds - last_ways_cast_time)%30 > 0.0  
-            #(time_passed_in_seconds - last_ways_cast_time)%30 < 30.0
-            and not ways_casted):
+            and not ways_casted and not minimal_enchantment_maintained):
             cast_way_of_perfection_and_master()
             ways_casted = True
             last_ways_cast_time = time.time() - start_time
@@ -147,7 +150,7 @@ for run_number in range(NUMBER_OF_RUNS):
                 keyboard.release('x')
                 turn_around_done = True
         
-        if phase_collecting and utils_item.check_next_enemy(use_only_compass=True):
+        if phase_collecting and utils_enemy.check_next_enemy(use_only_compass=True):
             print("Enemy detected during collecting, pausing collecting and go back to spike mode")
             # Re-enable spike mode if an enemy is detected during collecting
             phase_spike = True
@@ -169,9 +172,9 @@ for run_number in range(NUMBER_OF_RUNS):
         if phase_spike:
             if ((time_passed_in_seconds - last_shadowform_cast_time > 3.0 or last_shadowform_cast_time == 0) 
                 and (time_passed_in_seconds - last_spike_cast_time >= 3.0)):
-                if not utils_item.check_next_enemy():
+                if not utils_enemy.check_next_enemy():
                     time.sleep(0.1)
-                    if not utils_item.check_next_enemy():
+                    if not utils_enemy.check_next_enemy():
                         print("Collecting since no enemies detected")
                         phase_collecting = True
                         counter_irrelevant_items = 0
@@ -181,7 +184,7 @@ for run_number in range(NUMBER_OF_RUNS):
                 if energy_img_array < 60.0:
                     print(f"Mana below 60%, skipping Wastrel's Demise cast with mana at {energy_img_array}%")
                     continue
-                if utils_item.check_next_enemy():
+                if utils_enemy.check_next_enemy():
                     cast_spike(True)
                 nearest_enemy = not nearest_enemy  # Alternate between nearest and next enemy
                 last_spike_cast_time = time_passed_in_seconds
@@ -206,13 +209,22 @@ for run_number in range(NUMBER_OF_RUNS):
 
         # Use second movement dictionary to go back
         if (final_position_reached_forward and not phase_spike and not phase_collecting and
-            current_movement_index_backward < len(movement_keys_backward) and turn_around_done):
-            
+            current_movement_index_backward < len(movement_keys_backward) 
+            and turn_around_done):
+            # Check if jarnskeggi is found
+            keyboard.press('v')
+            time.sleep(0.01)
+            keyboard.release('v')
+            time.sleep(0.01)
+            bbox = generate_bbox(860, 55, 180, 15)
+            screenshot, img_array = capture_and_process_region(bbox, "npc_check")
+            if is_object(img_array, "jarnskeggi", print_diff=True, asset_path="assets/npcs"):
+                break
             current_movement_key_backward, current_movement_remaining_backward, current_movement_index_backward, sequence_complete = handle_movement_sequence(
                 dict_movement_backward, current_movement_key_backward, current_movement_remaining_backward, 
                 current_movement_index_backward, MOVEMENT_CHUNK_SIZE, "backward"
             )
-            
+            12
             # Check if all movements are complete
             if sequence_complete:
                 final_position_reached_forward = False
@@ -232,4 +244,4 @@ for run_number in range(NUMBER_OF_RUNS):
 
     # Go back to jarnskeggi and than to jaga moraine area to start a new run
     utils_areas.jaga_moraine2jarnskeggi(12.0)
-    utils_areas.bjora_marches2jaga_moraine()
+    utils_areas.jaga_moraine2bjora_marches(10.0)
