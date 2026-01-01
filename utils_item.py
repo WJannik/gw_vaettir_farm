@@ -59,8 +59,8 @@ def is_object(img_array, object_name, threshhold_binary = 128, threshhold_differ
     mask_reference_img = Image.fromarray((mask_reference * 255).astype(np.uint8))
     mask_test_img = Image.fromarray((mask_test * 255).astype(np.uint8))
     try:
-        mask_reference_img.save("mask_reference.png")
-        mask_test_img.save("mask_test.png")
+        mask_reference_img.save("debug_images/mask_reference.png")
+        mask_test_img.save("debug_images/mask_test.png")
     except Exception as e:
         print("Error saving mask images:", e)
     #print("Masks saved as mask_reference.png and mask_test.png")
@@ -72,7 +72,7 @@ def is_object(img_array, object_name, threshhold_binary = 128, threshhold_differ
     diff_image = np.abs(object_array.astype(int) - img_array.astype(int)).astype(np.uint8)
     diff_image_pil = Image.fromarray(diff_image)
     try:
-        diff_image_pil.save("diff_image.png")
+        diff_image_pil.save("debug_images/diff_image.png")
     except Exception as e:
         print("Error saving difference image:", e)
     if print_diff:
@@ -95,7 +95,7 @@ def check_next_item():
     
     # Save the screenshot (optional - for debugging)
     try:
-        screenshot.save("item_check.png")
+        screenshot.save("debug_images/item_check.png")
     except Exception as e:
         print("Error saving item check screenshot:", e)
     
@@ -151,8 +151,8 @@ def check_next_enemy(use_only_compass=False):
     # Save the screenshot (optional - for debugging)
     try:
         if not use_only_compass:
-            screenshot.save("enemy_check.png")
-        screenshot_compass.save("enemy_check_compass.png")
+            screenshot.save("debug_images/enemy_check.png")
+        screenshot_compass.save("debug_images/enemy_check_compass.png")
     except Exception as e:
         print("Error saving enemy check screenshots:", e)
     # Convert to numpy array for color analysis

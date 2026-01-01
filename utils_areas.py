@@ -19,9 +19,7 @@ def click_at_position(x, y, button=Button.left, clicks=1, delay=0.1):
         button: Mouse button to click (Button.left, Button.right, Button.middle)
         clicks (int): Number of clicks (1 for single click, 2 for double click)
         delay (float): Delay between clicks for multi-click
-    """
-    print(f"Clicking at position ({x}, {y})")
-    
+    """    
     # Move mouse to position
     mouse_controller.position = (x, y)
     time.sleep(0.05)  # Small delay to ensure movement
@@ -48,9 +46,7 @@ def drag_to_position(start_x, start_y, end_x, end_y, duration=1.0):
         start_x, start_y: Starting coordinates
         end_x, end_y: Ending coordinates  
         duration: Time in seconds to complete the drag
-    """
-    print(f"Dragging from ({start_x}, {start_y}) to ({end_x}, {end_y})")
-    
+    """    
     # Move to start position
     mouse_controller.position = (start_x, start_y)
     time.sleep(0.1)
@@ -71,14 +67,14 @@ def drag_to_position(start_x, start_y, end_x, end_y, duration=1.0):
     mouse_controller.release(Button.left)
 
 
-def bjora_marches2jaga_moraine():
+def bjora_marches2jaga_moraine(time_to_wait= 10.0):
     print("Setting area to Bjora Marches to Jaga Moraine")
     # Simulate pressing keys to set the area
     keyboard.press('ö')
     time.sleep(0.01)
     keyboard.release('ö')
     time.sleep(0.1)  # Wait for the area to load
-    pick_up_selected_item(10.0)  # Wait longer for area change
+    pick_up_selected_item(time_to_wait)  # Wait longer for area change
 
 def jaga_moraine2jarnskeggi(time_to_wait=7.5):
     print("Go from Jaga Moraine to Jarnskeggi")
@@ -123,7 +119,10 @@ def go_to_area_as_object(area = "sacred_altar"):
     screenshot = ImageGrab.grab(bbox=bbox)
     
     # Save the screenshot (optional - for debugging)
-    screenshot.save("area_check.png")
+    try:
+        screenshot.save("area_check.png")
+    except Exception as e:
+        print("Error saving screenshot:", e)
     
     # Convert to numpy array for color analysis
     img_array = np.array(screenshot)
@@ -140,9 +139,11 @@ def go_to_area_as_object(area = "sacred_altar"):
         # Save masks as images
         mask_reference_img = Image.fromarray((mask_reference * 255).astype(np.uint8))
         mask_test_img = Image.fromarray((mask_test * 255).astype(np.uint8))
-        
-        mask_reference_img.save("mask_reference.png")
-        mask_test_img.save("mask_test.png")
+        try:
+            mask_reference_img.save("debug_images/mask_reference.png")
+            mask_test_img.save("debug_images/mask_test.png")
+        except Exception as e:
+            print("Error saving mask images:", e)
         #print("Masks saved as mask_reference.png and mask_test.png")
 
         # Compute the difference
@@ -152,7 +153,7 @@ def go_to_area_as_object(area = "sacred_altar"):
         diff_image = np.abs(glacial_stone_array.astype(int) - img_array.astype(int)).astype(np.uint8)
         diff_image_pil = Image.fromarray(diff_image)
         try:
-            diff_image_pil.save("diff_image.png")
+            diff_image_pil.save("debug_images/diff_image.png")
         except Exception as e:
             print("Error saving difference image:", e)
         #print("Difference :", diff)
