@@ -12,7 +12,9 @@ items_of_interest = [
     "fruitcake",
     "snowman_summoner",
     "lockpick",
-    "candy_cane_shard"
+    "candy_cane_shard",
+    "mischievous_tonic",
+    "frosty_tonic",
 ]
 
 def check_next_item():
