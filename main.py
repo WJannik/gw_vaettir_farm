@@ -54,10 +54,10 @@ for run_number in range(NUMBER_OF_RUNS):
     dict_movement_forwards = {
         "move_forward_1": 10.0,
         "turn_right_1": 0.6,
-        "move_forward_2": 11.0,
+        "move_forward_2": 13.0,
     }
     dict_movement_backward = {
-        "move_forward_1": 8.0,
+        "move_forward_1": 10.0,
     }
     final_position_reached_forward = False
     current_movement_key_forward = None

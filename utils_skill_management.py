@@ -63,4 +63,5 @@ def cast_spike(nearest_enemy=True):
             keyboard.release(Key.tab)
             time.sleep(0.01)
     cast_skill('7', cast_time=0.25, aftercast_delay_required=True, skill_name="Wastrel's Demise")
-    cast_skill('6', cast_time=0.25, aftercast_delay_required=True, skill_name="Cry of Pain")
+    # Remove aftercast delay, since this is sometimes on cooldown
+    cast_skill('6', cast_time=0.25, aftercast_delay_required=False, skill_name="Cry of Pain") 
