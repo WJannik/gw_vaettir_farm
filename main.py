@@ -16,7 +16,11 @@ from utils_general import generate_bbox, capture_and_process_region, is_object
 # Create a keyboard controller
 keyboard = Controller()
 
+
+# Log the time of each run
+run_times = []
 for run_number in range(NUMBER_OF_RUNS):
+    start_time_run = time.time()
     print(f"Starting the {run_number+1}-th run in ...")
     for countdown in range(3, 0, -1):
         print(countdown)
@@ -105,6 +109,7 @@ for run_number in range(NUMBER_OF_RUNS):
 
         # Cast Shroud of Distress every 45 seconds  after it was last casted
         if ((time_passed_in_seconds - last_shroud_of_distress_cast_time)%45 > 0.0 
+            and time_passed_in_seconds - last_shadowform_cast_time < 18.0
             and not shroud_casted):
             cast_shroud_of_distress()
             shroud_casted = True
@@ -116,7 +121,8 @@ for run_number in range(NUMBER_OF_RUNS):
             shroud_casted = False
 
         # Cast Way of Perfection and Master every 30 seconds after it was last casted
-        if ((time_passed_in_seconds - last_ways_cast_time)%30 > 0.0  
+        if ((time_passed_in_seconds - last_ways_cast_time)%30 > 0.0 
+            and time_passed_in_seconds - last_shadowform_cast_time < 18.0 
             and not ways_casted and not minimal_enchantment_maintained):
             cast_way_of_perfection_and_master()
             ways_casted = True
@@ -163,14 +169,15 @@ for run_number in range(NUMBER_OF_RUNS):
         # Re-enable spike mode if an enemy is detected during collecting.
         if (final_position_reached_forward and not phase_spike 
             and not phase_collecting and not turn_around_done):
-            if time.time() - last_movement_time > 20:
-                # Enable spike mode, after 20 seconds of no movement. Enemies should group around you meanwhile
+            if time.time() - last_movement_time > 60 or utils_enemy.are_enemies_stacked():
+                # Enable spike mode, after 60 seconds of no movement or if enemies are stacked.
                 phase_spike = True
-                print("No movement for 20 seconds, enabling spike mode")
+                print("No movement for 60 seconds or enemies stacked, enabling spike mode")
 
         # Kill the enemies nearby with spike
         if phase_spike:
-            if ((time_passed_in_seconds - last_shadowform_cast_time > 3.0 or last_shadowform_cast_time == 0) 
+            if ((time_passed_in_seconds - last_shadowform_cast_time > 3.0 or last_shadowform_cast_time == 0)
+                and time_passed_in_seconds - last_shadowform_cast_time < 18.0 
                 and (time_passed_in_seconds - last_spike_cast_time >= 3.0)):
                 if not utils_enemy.check_next_enemy():
                     time.sleep(0.1)
@@ -218,7 +225,7 @@ for run_number in range(NUMBER_OF_RUNS):
             time.sleep(0.01)
             bbox = generate_bbox(860, 55, 180, 15)
             screenshot, img_array = capture_and_process_region(bbox, "npc_check")
-            if is_object(img_array, "jarnskeggi", print_diff=True, asset_path="assets/npcs"):
+            if is_object(img_array, "jarnskeggi", print_diff=False, asset_path="assets/npcs"):
                 break
             current_movement_key_backward, current_movement_remaining_backward, current_movement_index_backward, sequence_complete = handle_movement_sequence(
                 dict_movement_backward, current_movement_key_backward, current_movement_remaining_backward, 
@@ -245,3 +252,17 @@ for run_number in range(NUMBER_OF_RUNS):
     # Go back to jarnskeggi and than to jaga moraine area to start a new run
     utils_areas.jaga_moraine2jarnskeggi(12.0)
     utils_areas.jaga_moraine2bjora_marches(10.0)
+
+    # Log the time of the run
+    run_times.append(time.time() - start_time_run)
+    print(f"Run {run_number+1} completed in {time.time() - start_time_run} seconds.")
+
+# Plot the run times
+import matplotlib.pyplot as plt
+plt.plot(range(1, NUMBER_OF_RUNS+1), run_times, marker='o')
+plt.xlabel('Run Number')
+plt.ylabel('Time (seconds)')
+plt.title('Time Taken for Each Run')
+plt.grid()
+plt.savefig('run_times.png')
+plt.show()

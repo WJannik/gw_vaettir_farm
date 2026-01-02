@@ -20,14 +20,14 @@ def bjora_marches2jaga_moraine(time_to_wait= 10.0):
     # Check if the selected area is Jaga Moraine. 
     bbox = generate_bbox(860, 55, 180, 15)
     screenshot, img_array = capture_and_process_region(bbox, "area_check")
-    if is_object(img_array, "jaga_moraine", print_diff=True, asset_path="assets/areas"):
+    if is_object(img_array, "jaga_moraine", print_diff=False, asset_path="assets/areas"):
         pick_up_selected_object(time_to_wait)  # Wait longer for area change
     elif is_object(img_array, "bjora_marches", print_diff=False, asset_path="assets/areas"):
         print("Already in Bjora Marches. Reset area.")
         jaga_moraine2bjora_marches(time_to_wait+5)
         bjora_marches2jaga_moraine(time_to_wait+5)
     else:
-        print("Area not recognized. Cannot change area. 2")
+        print("Area not recognized. Cannot change area.")
 
 def jaga_moraine2bjora_marches(time_to_wait=7.5):
     print("Setting area from Jaga Moraine to Bjora Marches")
@@ -45,7 +45,7 @@ def jaga_moraine2bjora_marches(time_to_wait=7.5):
         bjora_marches2jaga_moraine(time_to_wait+5)
         jaga_moraine2bjora_marches(time_to_wait+5)
     else:
-        print("Area not recognized. Cannot change area. 1öv")
+        print("Area not recognized. Cannot change area.")
 
 def jaga_moraine2jarnskeggi(time_to_wait=7.5):
     print("Go from Jaga Moraine to Jarnskeggi")
@@ -57,7 +57,7 @@ def jaga_moraine2jarnskeggi(time_to_wait=7.5):
     bbox = generate_bbox(860, 55, 180, 15)
     screenshot, img_array = capture_and_process_region(bbox, "npc_check")
     # Check if the selected npc is Jarnskeggi.
-    if is_object(img_array, "jarnskeggi", print_diff=True, asset_path="assets/npcs"):
+    if is_object(img_array, "jarnskeggi", print_diff=False, asset_path="assets/npcs"):
         print("Jarnskeggi found! Go to him.")
         pick_up_selected_object(time_to_wait)  # Wait longer for area change
     elif (is_object(img_array, "kobach_the_ferocious", print_diff=False, asset_path="assets/npcs") or 
