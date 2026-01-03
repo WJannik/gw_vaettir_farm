@@ -90,3 +90,21 @@ def handle_movement_sequence(movement_dict, current_movement_key, current_moveme
                 return None, 0.0, current_movement_index, True
     
     return current_movement_key, current_movement_remaining, current_movement_index, False
+
+def stuck():
+    duration = 0.01
+    # Write /stuck in chat to get unstuck
+    keyboard.press(Key.enter)
+    time.sleep(duration)
+    keyboard.release(Key.enter)
+    time.sleep(duration)
+    letter = ['/','s','t','u','c','k']
+    for char in letter:
+        keyboard.press(char)
+        keyboard.release(char)
+        time.sleep(0.01)
+    keyboard.press(Key.enter)
+    time.sleep(duration)
+    keyboard.release(Key.enter)
+    time.sleep(duration)
+

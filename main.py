@@ -10,7 +10,7 @@ import utils_enemy
 import utils_areas
 import utils_energy_management
 from utils_skill_management import *
-from utils_movement import handle_movement_sequence
+from utils_movement import handle_movement_sequence, stuck
 from constants import NUMBER_OF_RUNS, MOVEMENT_CHUNK_SIZE
 from utils_general import generate_bbox, capture_and_process_region, is_object
 # Create a keyboard controller
@@ -169,6 +169,8 @@ for run_number in range(NUMBER_OF_RUNS):
         # Re-enable spike mode if an enemy is detected during collecting.
         if (final_position_reached_forward and not phase_spike 
             and not phase_collecting and not turn_around_done):
+            if time.time() - last_movement_time > 30:
+                stuck()
             if time.time() - last_movement_time > 60 or utils_enemy.are_enemies_stacked():
                 # Enable spike mode, after 60 seconds of no movement or if enemies are stacked.
                 phase_spike = True
