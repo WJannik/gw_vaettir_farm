@@ -15,7 +15,7 @@ def are_enemies_stacked():
     height, width, _ = np.shape(img_array)
     middel_height = height // 2
     middle_width = width // 2
-    size_of_box = 6
+    size_of_box = 5
     img_array[middel_height-size_of_box:middel_height+size_of_box, middle_width-size_of_box:middle_width+size_of_box, :] = 0
     try:
         # Save the debug image img_array

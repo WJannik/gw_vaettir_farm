@@ -50,6 +50,7 @@ for run_number in range(NUMBER_OF_RUNS):
     nearest_enemy = True
     minimal_enchantment_maintained = False
     turn_around_done = False
+    stuck_used = False
 
     # Counter for collecting items
     counter_irrelevant_items = 0 
@@ -58,10 +59,10 @@ for run_number in range(NUMBER_OF_RUNS):
     dict_movement_forwards = {
         "move_forward_1": 10.0,
         "turn_right_1": 0.6,
-        "move_forward_2": 13.0,
+        "move_forward_2": 15.0,
     }
     dict_movement_backward = {
-        "move_forward_1": 10.0,
+        "move_forward_1": 12.0,
     }
     final_position_reached_forward = False
     current_movement_key_forward = None
@@ -169,10 +170,12 @@ for run_number in range(NUMBER_OF_RUNS):
         # Re-enable spike mode if an enemy is detected during collecting.
         if (final_position_reached_forward and not phase_spike 
             and not phase_collecting and not turn_around_done):
-            if time.time() - last_movement_time > 30:
+            if time.time() - last_movement_time > 30 and not stuck_used:
+                stuck_used = True
                 stuck()
             if time.time() - last_movement_time > 60 or utils_enemy.are_enemies_stacked():
                 # Enable spike mode, after 60 seconds of no movement or if enemies are stacked.
+                time.sleep(1.0)  # Wait a moment before changing phase
                 phase_spike = True
                 print("No movement for 60 seconds or enemies stacked, enabling spike mode")
 
@@ -260,11 +263,12 @@ for run_number in range(NUMBER_OF_RUNS):
     print(f"Run {run_number+1} completed in {time.time() - start_time_run} seconds.")
 
 # Plot the run times
+current_time = time.strftime("%Y%m%d-%H%M%S")
 import matplotlib.pyplot as plt
 plt.plot(range(1, NUMBER_OF_RUNS+1), run_times, marker='o')
 plt.xlabel('Run Number')
 plt.ylabel('Time (seconds)')
-plt.title('Time Taken for Each Run')
+plt.title('Time Taken for Each Run. Average Time: {:.2f} seconds'.format(np.mean(run_times)))
 plt.grid()
-plt.savefig('run_times.png')
+plt.savefig(f'run_times_{current_time}.png')
 plt.show()
