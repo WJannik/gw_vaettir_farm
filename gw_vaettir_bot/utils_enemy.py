@@ -1,8 +1,21 @@
 import time
 from pynput.keyboard import Controller
-from .utils_general import generate_bbox, generate_center_bbox, capture_and_process_region, is_red, is_yellow, is_object
 import numpy as np
 import matplotlib.pyplot as plt
+
+# Try relative imports first, then absolute imports for testing
+try:
+    from .utils_general import generate_bbox, generate_center_bbox, capture_and_process_region, is_red, is_yellow, is_object
+except ImportError:
+    # If relative imports fail, try absolute imports for testing
+    try:
+        from utils_general import generate_bbox, generate_center_bbox, capture_and_process_region, is_red, is_yellow, is_object
+    except ImportError:
+        # If that fails too, try adding the parent directory to path
+        import os
+        import sys
+        sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        from gw_vaettir_bot.utils_general import generate_bbox, generate_center_bbox, capture_and_process_region, is_red, is_yellow, is_object
 # Create a keyboard controller
 keyboard = Controller()
 
@@ -78,6 +91,13 @@ def check_next_enemy(use_only_compass=False):
         return False
 
 if __name__ == "__main__":
+    # Add current directory to path for testing
+    import os
+    import sys
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    if current_dir not in sys.path:
+        sys.path.insert(0, current_dir)
+    
     time.sleep(2)  # Give some time before checking
     for _ in range(1):  # Check 1 cycle
         check_next_enemy()

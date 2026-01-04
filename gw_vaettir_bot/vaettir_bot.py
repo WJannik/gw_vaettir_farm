@@ -5,14 +5,40 @@ from PIL import ImageGrab
 import numpy as np
 import matplotlib.pyplot as plt
 
-from . import utils_item
-from . import utils_enemy
-from . import utils_areas
-from . import utils_energy_management
-from .utils_skill_management import *
-from .utils_movement import handle_movement_sequence, stuck
-from .constants import MOVEMENT_CHUNK_SIZE
-from .utils_general import generate_bbox, capture_and_process_region, is_object
+# Try relative imports first, then absolute imports for testing
+try:
+    from . import utils_item
+    from . import utils_enemy
+    from . import utils_areas
+    from . import utils_energy_management
+    from .utils_skill_management import *
+    from .utils_movement import handle_movement_sequence, stuck
+    from .constants import MOVEMENT_CHUNK_SIZE
+    from .utils_general import generate_bbox, capture_and_process_region, is_object
+except ImportError:
+    # If relative imports fail, try absolute imports for testing
+    try:
+        import utils_item
+        import utils_enemy
+        import utils_areas
+        import utils_energy_management
+        from utils_skill_management import *
+        from utils_movement import handle_movement_sequence, stuck
+        from constants import MOVEMENT_CHUNK_SIZE
+        from utils_general import generate_bbox, capture_and_process_region, is_object
+    except ImportError:
+        # If that fails too, try adding the parent directory to path
+        import os
+        import sys
+        sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        from gw_vaettir_bot import utils_item
+        from gw_vaettir_bot import utils_enemy
+        from gw_vaettir_bot import utils_areas
+        from gw_vaettir_bot import utils_energy_management
+        from gw_vaettir_bot.utils_skill_management import *
+        from gw_vaettir_bot.utils_movement import handle_movement_sequence, stuck
+        from gw_vaettir_bot.constants import MOVEMENT_CHUNK_SIZE
+        from gw_vaettir_bot.utils_general import generate_bbox, capture_and_process_region, is_object
 
 
 def start_farm(number_of_runs):
@@ -75,8 +101,8 @@ def start_farm(number_of_runs):
         dict_movement_forwards = {
             "stop_1": 4.0,
             "move_forward_1": 10.0,
-            "turn_right_1": 0.6,
-            "move_forward_2": 17.0,
+            "turn_right_1": 0.63,
+            "move_forward_2": 16.0,
         }
         dict_movement_backward = {
             "move_forward_1": 15.0,
@@ -326,10 +352,10 @@ def start_farm(number_of_runs):
 
     # Stack the bars properly - each phase on top of the previous
     ax.bar(run_numbers, forward_times, width, label='Running Forward', color='#1f77b4')
-    ax.bar(run_numbers, waiting_times, width, bottom=forward_times, label='Waiting for Stacked Enemies', color='#ff7f0e')
-    ax.bar(run_numbers, spike_times, width, bottom=forward_times + waiting_times, label='Spike Phase', color='#2ca02c')
-    ax.bar(run_numbers, collecting_times, width, bottom=forward_times + waiting_times + spike_times, label='Collecting Phase', color='#d62728')
-    ax.bar(run_numbers, backward_times, width, bottom=forward_times + waiting_times + spike_times + collecting_times, label='Running Backward', color='#9467bd')
+    ax.bar(run_numbers, waiting_times, width, bottom=forward_times, label='Waiting for Stacked Enemies', color="#b4670e")
+    ax.bar(run_numbers, spike_times, width, bottom=forward_times + waiting_times, label='Spike Phase', color="#A10C2D")
+    ax.bar(run_numbers, collecting_times, width, bottom=forward_times + waiting_times + spike_times, label='Collecting Phase', color="#4116a3")
+    ax.bar(run_numbers, backward_times, width, bottom=forward_times + waiting_times + spike_times + collecting_times, label='Running Backward', color="#25af13")
 
     ax.set_xlabel('Run Number')
     ax.set_ylabel('Time (seconds)')
@@ -342,5 +368,10 @@ def start_farm(number_of_runs):
 
 
 if __name__ == "__main__":
+    # Add current directory to path for testing
+    import os
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    if current_dir not in sys.path:
+        sys.path.insert(0, current_dir)
     number_of_runs = 1
     start_farm(number_of_runs)

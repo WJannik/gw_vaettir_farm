@@ -1,7 +1,22 @@
+import sys
 import time
 from pynput.keyboard import Key, Controller
-from .utils_general import generate_bbox, capture_and_process_region, is_yellow, is_object
-from .utils_general import pick_up_selected_object
+
+# Try relative imports first, then absolute imports for testing
+try:
+    from .utils_general import generate_bbox, capture_and_process_region, is_yellow, is_object
+    from .utils_general import pick_up_selected_object
+except ImportError:
+    # If relative imports fail, try absolute imports for testing
+    try:
+        from utils_general import generate_bbox, capture_and_process_region, is_yellow, is_object
+        from utils_general import pick_up_selected_object
+    except ImportError:
+        # If that fails too, try adding the parent directory to path
+        import os
+        sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        from gw_vaettir_bot.utils_general import generate_bbox, capture_and_process_region, is_yellow, is_object
+        from gw_vaettir_bot.utils_general import pick_up_selected_object
 # Create a keyboard controller
 keyboard = Controller()
 
@@ -15,6 +30,10 @@ items_of_interest = [
     "candy_cane_shard",
     "mischievous_tonic",
     "frosty_tonic",
+    "map_top_left",
+    "map_top_right",
+    "map_bottom_left",
+    "map_bottom_right",
 ]
 
 def check_next_item():
@@ -41,6 +60,12 @@ def check_next_item():
     return False
 
 if __name__ == "__main__":
+    # Add current directory to path for testing
+    import os
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    if current_dir not in sys.path:
+        sys.path.insert(0, current_dir)
+    
     time.sleep(2)  # Give some time before checking
     for _ in range(1):  # Check 1 cycle
         check_next_item()

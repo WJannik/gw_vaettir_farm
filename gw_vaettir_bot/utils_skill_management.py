@@ -1,6 +1,19 @@
 import time
 from pynput.keyboard import Key, Listener, Controller
-from .constants import AFTERCAST_DELAY
+
+# Try relative imports first, then absolute imports for testing
+try:
+    from .constants import AFTERCAST_DELAY
+except ImportError:
+    # If relative imports fail, try absolute imports for testing
+    try:
+        from constants import AFTERCAST_DELAY
+    except ImportError:
+        # If that fails too, try adding the parent directory to path
+        import os
+        import sys
+        sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        from gw_vaettir_bot.constants import AFTERCAST_DELAY
 # Create a keyboard controller
 keyboard = Controller()
 
