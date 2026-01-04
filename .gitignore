@@ -1,4 +1,4 @@
-logs/
+logs/*.png
 __pychache__/
 *.pyc
-debug_images/
+debug_images/*.png
