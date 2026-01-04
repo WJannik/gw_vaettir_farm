@@ -18,6 +18,27 @@ def move_backward(duration):
     time.sleep(duration)
     keyboard.release('s')
 
+def move_stop(duration):
+    """Stop movement for specified duration"""
+    #print(f"Stopping movement for {duration} seconds")
+    keyboard.release('w')
+    keyboard.release('s')
+    time.sleep(duration)
+
+def move_sideways_left(duration):
+    """Move sideways left for specified duration"""
+    #print(f"Moving sideways left for {duration} seconds")
+    keyboard.press('q')
+    time.sleep(duration)
+    keyboard.release('q')
+
+def move_sideways_right(duration):
+    """Move sideways right for specified duration"""
+    #print(f"Moving sideways right for {duration} seconds")
+    keyboard.press('e')
+    time.sleep(duration)
+    keyboard.release('e')
+
 def turn_left(duration):
     """Turn left for specified duration"""
     #print(f"Turning left for {duration} seconds")
@@ -44,6 +65,12 @@ def execute_chunk_of_movement(current_movement_key, current_movement_remaining,m
         turn_left(chunk_duration)
     elif "turn_right" in current_movement_key:
         turn_right(chunk_duration)
+    elif "move_sideways_left" in current_movement_key:
+        move_sideways_left(chunk_duration)
+    elif "move_sideways_right" in current_movement_key:
+        move_sideways_right(chunk_duration)
+    elif "stop" in current_movement_key:
+        move_stop(chunk_duration)
     return current_movement_remaining - chunk_duration
 
 def handle_movement_sequence(movement_dict, current_movement_key, current_movement_remaining, 

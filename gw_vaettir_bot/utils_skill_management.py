@@ -1,6 +1,6 @@
 import time
 from pynput.keyboard import Key, Listener, Controller
-from constants import AFTERCAST_DELAY
+from .constants import AFTERCAST_DELAY
 # Create a keyboard controller
 keyboard = Controller()
 
@@ -56,7 +56,7 @@ def cast_spike(nearest_enemy=True):
         keyboard.release('c')
         time.sleep(0.01)
     else:
-        for _ in range(2):
+        for _ in range(1):
             # Get next enemy by pressing tab key
             keyboard.press(Key.tab)
             time.sleep(0.01)

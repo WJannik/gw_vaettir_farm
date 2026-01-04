@@ -1,6 +1,6 @@
 import time
 from pynput.keyboard import Controller
-from utils_general import generate_bbox, generate_center_bbox, capture_and_process_region, is_red, is_yellow, is_object
+from .utils_general import generate_bbox, generate_center_bbox, capture_and_process_region, is_red, is_yellow, is_object
 import numpy as np
 import matplotlib.pyplot as plt
 # Create a keyboard controller
@@ -19,7 +19,7 @@ def are_enemies_stacked():
     img_array[middel_height-size_of_box:middel_height+size_of_box, middle_width-size_of_box:middle_width+size_of_box, :] = 0
     try:
         # Save the debug image img_array
-        plt.imsave("debug_images/enemies_stacked.png", img_array)
+        plt.imsave("gw_vaettir_bot/debug_images/enemies_stacked.png", img_array)
     except Exception as e:
         print(f"Error saving debug image {"enemies_stacked"}.png:", e)
     # Check for red or yellow colors indicating are not stacked
@@ -58,7 +58,7 @@ def check_next_enemy(use_only_compass=False):
 
     try:
         # Save the debug image img_array_compass
-        plt.imsave("debug_images/enemies_without_edge.png", img_array_compass)
+        plt.imsave("gw_vaettir_bot/debug_images/enemies_without_edge.png", img_array_compass)
     except Exception as e:
         print(f"Error saving debug image {"enemies_without_edge"}.png:", e)
     if is_red(img_array_compass, 1) or is_yellow(img_array_compass, 1):

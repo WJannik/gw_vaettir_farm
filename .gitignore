@@ -1,4 +1,4 @@
-logs/*.png
-__pychache__/
+gw_vaettir_bot/logs/*.png
+gw_vaettir_bot/__pycache__/
 *.pyc
-debug_images/*.png
+gw_vaettir_bot/debug_images/*.png

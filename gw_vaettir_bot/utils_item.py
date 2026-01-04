@@ -1,7 +1,7 @@
 import time
 from pynput.keyboard import Key, Controller
-from utils_general import generate_bbox, capture_and_process_region, is_yellow, is_object
-from utils_general import pick_up_selected_object
+from .utils_general import generate_bbox, capture_and_process_region, is_yellow, is_object
+from .utils_general import pick_up_selected_object
 # Create a keyboard controller
 keyboard = Controller()
 

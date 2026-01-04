@@ -57,7 +57,7 @@ def capture_and_process_region(bbox, debug_filename=None, save_debug=True):
     # Save debug image if requested
     if save_debug and debug_filename:
         try:
-            screenshot.save(f"debug_images/{debug_filename}.png")
+            screenshot.save(f"gw_vaettir_bot/debug_images/{debug_filename}.png")
         except Exception as e:
             print(f"Error saving debug image {debug_filename}.png:", e)
     
@@ -65,7 +65,7 @@ def capture_and_process_region(bbox, debug_filename=None, save_debug=True):
     img_array = np.array(screenshot)
     return screenshot, img_array
 
-def compare_with_reference_image(img_array, reference_name, asset_path="assets/items", 
+def compare_with_reference_image(img_array, reference_name, asset_path="gw_vaettir_bot/assets/items", 
                                 threshold_binary=128, threshold_difference=2000, 
                                 print_diff=False, save_debug=True):
     """
@@ -95,7 +95,7 @@ def compare_with_reference_image(img_array, reference_name, asset_path="assets/i
         if save_debug:
             try:
                 import os
-                debug_dir = "debug_images"
+                debug_dir = "gw_vaettir_bot/debug_images"
                 if not os.path.exists(debug_dir):
                     os.makedirs(debug_dir)
                     
@@ -153,7 +153,7 @@ def is_red(img_array, pixel_threshold=25):
     # Red is typically high red, low green and blue
     return is_color(img_array, "red", r_min=128, r_max=255, g_min=0, g_max=100, b_min=0, b_max=100, pixel_threshold=pixel_threshold)
 
-def is_yellow(img_array, pixel_threshold=20):
+def is_yellow(img_array, pixel_threshold=10):
     # Yellow is typically high red and green, low blue
     return is_color(img_array, "yellow", r_min=200, r_max=255, g_min=200, g_max=255, b_min=0, b_max=100, pixel_threshold=pixel_threshold)
 
@@ -165,7 +165,7 @@ def is_blue(img_array):
     # Blue is typically low red and green, high blue
     return is_color(img_array, "blue", r_min=0, r_max=100, g_min=0, g_max=100, b_min=150, b_max=255, pixel_threshold=20)
 
-def is_object(img_array, object_name, threshhold_binary=128, threshhold_difference=2000, print_diff=False, asset_path="assets/items"):
+def is_object(img_array, object_name, threshhold_binary=128, threshhold_difference=2000, print_diff=False, asset_path="gw_vaettir_bot/assets/items"):
     """ Compare the cropped area with the image of the object as png. Can be used for npc, items, areas, enemies"""
     return compare_with_reference_image(
         img_array, object_name, asset_path=asset_path,
@@ -244,12 +244,12 @@ if __name__== "__main__":
     bbox = generate_bbox(860, 55, 180, 15)
     screenshot, img_array = capture_and_process_region(bbox, "test_region")
     # Compare the imge with the assest image at assets/npc/jarnskeggi.png
-    if is_object(img_array, "jarnskeggi", print_diff=True, asset_path="assets/npcs"):
+    if is_object(img_array, "jarnskeggi", print_diff=True, asset_path="gw_vaettir_bot/assets/npcs"):
         print("Jarnskeggi detected!")
     else:
         print("Jarnskeggi not detected.")
         # Compare the imge with the assest image at assets/npc/kobach_the_ferocious.png
-    if is_object(img_array, "kobach_the_ferocious", print_diff=True, asset_path="assets/npcs"):
+    if is_object(img_array, "kobach_the_ferocious", print_diff=True, asset_path="gw_vaettir_bot/assets/npcs"):
         print("Kobach the Ferocious detected!")
     else:
         print("Kobach the Ferocious not detected.")

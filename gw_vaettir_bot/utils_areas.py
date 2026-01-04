@@ -5,7 +5,7 @@ from pynput.keyboard import Key, Listener, Controller
 from pynput.mouse import Button, Listener as MouseListener
 from pynput import mouse
 
-from utils_general import pick_up_selected_object, click_at_position, generate_bbox, capture_and_process_region, is_object
+from .utils_general import pick_up_selected_object, click_at_position, generate_bbox, capture_and_process_region, is_object
 # Create a keyboard controller
 keyboard = Controller()
 # Create a mouse controller
@@ -20,9 +20,9 @@ def bjora_marches2jaga_moraine(time_to_wait= 10.0):
     # Check if the selected area is Jaga Moraine. 
     bbox = generate_bbox(860, 55, 180, 15)
     screenshot, img_array = capture_and_process_region(bbox, "area_check")
-    if is_object(img_array, "jaga_moraine", print_diff=False, asset_path="assets/areas"):
+    if is_object(img_array, "jaga_moraine", print_diff=False, asset_path="gw_vaettir_bot/assets/areas"):
         pick_up_selected_object(time_to_wait)  # Wait longer for area change
-    elif is_object(img_array, "bjora_marches", print_diff=False, asset_path="assets/areas"):
+    elif is_object(img_array, "bjora_marches", print_diff=False, asset_path="gw_vaettir_bot/assets/areas"):
         print("Already in Bjora Marches. Reset area.")
         jaga_moraine2bjora_marches(time_to_wait+5)
         bjora_marches2jaga_moraine(time_to_wait+5)
@@ -38,9 +38,9 @@ def jaga_moraine2bjora_marches(time_to_wait=7.5):
     bbox = generate_bbox(860, 55, 180, 15)
     screenshot, img_array = capture_and_process_region(bbox, "area_check")
     # Check if the selected area is Bjora Marches.
-    if is_object(img_array, "bjora_marches", print_diff=False, asset_path="assets/areas"):
+    if is_object(img_array, "bjora_marches", print_diff=False, asset_path="gw_vaettir_bot/assets/areas"):
         pick_up_selected_object(time_to_wait) 
-    elif is_object(img_array, "jaga_moraine", print_diff=False, asset_path="assets/areas"):
+    elif is_object(img_array, "jaga_moraine", print_diff=False, asset_path="gw_vaettir_bot/assets/areas"):
         print("Already in Jaga Moraine. I should reset to respawn enemies.")
         bjora_marches2jaga_moraine(time_to_wait+5)
         jaga_moraine2bjora_marches(time_to_wait+5)
@@ -57,11 +57,11 @@ def jaga_moraine2jarnskeggi(time_to_wait=7.5):
     bbox = generate_bbox(860, 55, 180, 15)
     screenshot, img_array = capture_and_process_region(bbox, "npc_check")
     # Check if the selected npc is Jarnskeggi.
-    if is_object(img_array, "jarnskeggi", print_diff=False, asset_path="assets/npcs"):
+    if is_object(img_array, "jarnskeggi", print_diff=False, asset_path="gw_vaettir_bot/assets/npcs"):
         print("Jarnskeggi found! Go to him.")
         pick_up_selected_object(time_to_wait)  # Wait longer for area change
-    elif (is_object(img_array, "kobach_the_ferocious", print_diff=False, asset_path="assets/npcs") or 
-        is_object(img_array, "polar_bear", print_diff=False, asset_path="assets/npcs")):
+    elif (is_object(img_array, "kobach_the_ferocious", print_diff=False, asset_path="gw_vaettir_bot/assets/npcs") or 
+        is_object(img_array, "polar_bear", print_diff=False, asset_path="gw_vaettir_bot/assets/npcs")):
         print("I am in the wrong area i.e. in bjora marches. Going back to jaga moraine.")
         jaga_moraine2bjora_marches(time_to_wait)
     else:
