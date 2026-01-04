@@ -19,8 +19,19 @@ keyboard = Controller()
 
 # Log the time of each run
 run_times = []
+run_times_running_forward = []
+run_times_running_backward = []
+run_times_spike_phase = []
+run_times_collecting_phase = []
+run_times_waiting_for_stacked_enemies = []
 for run_number in range(NUMBER_OF_RUNS):
     start_time_run = time.time()
+    run_time_forward = 0
+    run_time_backward = 0
+    run_time_spike = 0
+    run_time_collecting = 0
+    run_time_enemies_stacked = 0
+    last_used_logging_time = time.time()
     print(f"Starting the {run_number+1}-th run in ...")
     for countdown in range(3, 0, -1):
         print(countdown)
@@ -43,6 +54,7 @@ for run_number in range(NUMBER_OF_RUNS):
 
     # Phase flags
     phase_movement = True
+    pre_phase_spike = False
     phase_spike = False
     phase_collecting = False
 
@@ -92,7 +104,7 @@ for run_number in range(NUMBER_OF_RUNS):
             last_shadowform_cast_time = time.time() - start_time
             continue
         # Reset flags after 18 seconds such that it maintains the enchantment for sure
-        if shadowform_casted and time_passed_in_seconds - last_shadowform_cast_time >= 18.0:
+        if shadowform_casted and time_passed_in_seconds - last_shadowform_cast_time >= 19.5:
             shadowform_casted = False
 
         # Cast Mantra of earth at least 2 seconds after shadowform was casted 
@@ -152,6 +164,8 @@ for run_number in range(NUMBER_OF_RUNS):
             phase_collecting = False
             if not turn_around_done:
                 print("Collecting finished, performing U-turn after collecting")
+                run_time_collecting += time.time() - last_used_logging_time
+                last_used_logging_time = time.time()
                 keyboard.press('x')
                 time.sleep(0.01)
                 keyboard.release('x')
@@ -168,17 +182,21 @@ for run_number in range(NUMBER_OF_RUNS):
         # Spike phase ------------------------------------------------------
         # Enable spike phase if final position is reached and no movement for 20 seconds.
         # Re-enable spike mode if an enemy is detected during collecting.
-        if (final_position_reached_forward and not phase_spike 
+        if (final_position_reached_forward and not pre_phase_spike and not phase_spike
             and not phase_collecting and not turn_around_done):
             if time.time() - last_movement_time > 30 and not stuck_used:
                 stuck_used = True
                 stuck()
             if time.time() - last_movement_time > 60 or utils_enemy.are_enemies_stacked():
                 # Enable spike mode, after 60 seconds of no movement or if enemies are stacked.
-                time.sleep(1.0)  # Wait a moment before changing phase
-                phase_spike = True
+                pre_phase_spike = True
+                time_for_real_spike_start = time.time() + 5.0
                 print("No movement for 60 seconds or enemies stacked, enabling spike mode")
-
+        if pre_phase_spike and time.time() > time_for_real_spike_start:
+            phase_spike = True
+            pre_phase_spike = False
+            run_time_enemies_stacked += time.time() - last_used_logging_time
+            last_used_logging_time = time.time()
         # Kill the enemies nearby with spike
         if phase_spike:
             if ((time_passed_in_seconds - last_shadowform_cast_time > 3.0 or last_shadowform_cast_time == 0)
@@ -190,6 +208,8 @@ for run_number in range(NUMBER_OF_RUNS):
                         print("Collecting since no enemies detected")
                         phase_collecting = True
                         counter_irrelevant_items = 0
+                        run_time_spike += time.time() - last_used_logging_time
+                        last_used_logging_time = time.time()
                         continue
                 # Check if mana is above 60% before casting
                 energy_img_array = utils_energy_management.get_energy_level()
@@ -217,6 +237,9 @@ for run_number in range(NUMBER_OF_RUNS):
                 phase_movement = False
                 final_position_reached_forward = True
                 last_movement_time = time.time()
+                run_time_forward += time.time() - last_used_logging_time
+                last_used_logging_time = time.time()
+
 
 
         # Use second movement dictionary to go back
@@ -236,7 +259,6 @@ for run_number in range(NUMBER_OF_RUNS):
                 dict_movement_backward, current_movement_key_backward, current_movement_remaining_backward, 
                 current_movement_index_backward, MOVEMENT_CHUNK_SIZE, "backward"
             )
-            12
             # Check if all movements are complete
             if sequence_complete:
                 final_position_reached_forward = False
@@ -258,17 +280,57 @@ for run_number in range(NUMBER_OF_RUNS):
     utils_areas.jaga_moraine2jarnskeggi(12.0)
     utils_areas.jaga_moraine2bjora_marches(10.0)
 
+    run_time_backward  += time.time() - last_used_logging_time
     # Log the time of the run
     run_times.append(time.time() - start_time_run)
+    # Each phase time logging
+    run_times_running_forward.append(run_time_forward)
+    run_times_waiting_for_stacked_enemies.append(run_time_enemies_stacked)
+    run_times_spike_phase.append(run_time_spike)
+    run_times_collecting_phase.append(run_time_collecting)
+    run_times_running_backward.append(run_time_backward)
+
     print(f"Run {run_number+1} completed in {time.time() - start_time_run} seconds.")
 
-# Plot the run times
+# Plot the run times as stacked bar chart
 current_time = time.strftime("%Y%m%d-%H%M%S")
 import matplotlib.pyplot as plt
-plt.plot(range(1, NUMBER_OF_RUNS+1), run_times, marker='o')
-plt.xlabel('Run Number')
-plt.ylabel('Time (seconds)')
-plt.title('Time Taken for Each Run. Average Time: {:.2f} seconds'.format(np.mean(run_times)))
-plt.grid()
-plt.savefig(f'run_times_{current_time}.png')
+
+# Debug: Print the data to see what we have
+print("Debug - Data lengths:")
+print(f"Forward times: {len(run_times_running_forward)} values: {run_times_running_forward}")
+print(f"Waiting times: {len(run_times_waiting_for_stacked_enemies)} values: {run_times_waiting_for_stacked_enemies}")
+print(f"Spike times: {len(run_times_spike_phase)} values: {run_times_spike_phase}")
+print(f"Collecting times: {len(run_times_collecting_phase)} values: {run_times_collecting_phase}")
+print(f"Backward times: {len(run_times_running_backward)} values: {run_times_running_backward}")
+print(f"Total run times: {run_times}")
+
+# Create stacked bar chart
+run_numbers = list(range(1, NUMBER_OF_RUNS+1))
+
+# Convert lists to numpy arrays for easier stacking calculations
+forward_times = np.array(run_times_running_forward)
+waiting_times = np.array(run_times_waiting_for_stacked_enemies)
+spike_times = np.array(run_times_spike_phase)
+collecting_times = np.array(run_times_collecting_phase)
+backward_times = np.array(run_times_running_backward)
+
+# Create the stacked bars
+fig, ax = plt.subplots(figsize=(12, 8))
+width = 0.8
+
+# Stack the bars properly - each phase on top of the previous
+ax.bar(run_numbers, forward_times, width, label='Running Forward', color='#1f77b4')
+ax.bar(run_numbers, waiting_times, width, bottom=forward_times, label='Waiting for Stacked Enemies', color='#ff7f0e')
+ax.bar(run_numbers, spike_times, width, bottom=forward_times + waiting_times, label='Spike Phase', color='#2ca02c')
+ax.bar(run_numbers, collecting_times, width, bottom=forward_times + waiting_times + spike_times, label='Collecting Phase', color='#d62728')
+ax.bar(run_numbers, backward_times, width, bottom=forward_times + waiting_times + spike_times + collecting_times, label='Running Backward', color='#9467bd')
+
+ax.set_xlabel('Run Number')
+ax.set_ylabel('Time (seconds)')
+ax.set_title('Time Breakdown for Each Run. Average Total Time: {:.2f} seconds'.format(np.mean(run_times)))
+ax.legend(loc="upper right")
+ax.grid(axis='y', alpha=0.3)
+plt.tight_layout()
+plt.savefig(f'logs/run_times_stacked_{current_time}.png')
 plt.show()

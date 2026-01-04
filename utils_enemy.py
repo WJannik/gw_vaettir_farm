@@ -9,7 +9,7 @@ keyboard = Controller()
 def are_enemies_stacked():
     """Check if there are stacked enemies."""
     # Generate bounding box and capture the main region
-    bbox_compass = generate_center_bbox(1798, 153, 20)
+    bbox_compass = generate_center_bbox(1798, 153, 22)
     screenshot, img_array = capture_and_process_region(bbox_compass, "enemy_stack_check")
     # Remove the middel of the bounding box by setting is to black
     height, width, _ = np.shape(img_array)
@@ -23,7 +23,7 @@ def are_enemies_stacked():
     except Exception as e:
         print(f"Error saving debug image {"enemies_stacked"}.png:", e)
     # Check for red or yellow colors indicating are not stacked
-    if is_red(img_array, 3) or is_yellow(img_array, 3):
+    if is_red(img_array, 1) or is_yellow(img_array, 1):
         print("Stacked enemies detected outside the middle!.")
         return False
     else:
@@ -49,7 +49,18 @@ def check_next_enemy(use_only_compass=False):
     # Generate compass bounding box and capture compass region
     bbox_compass = generate_center_bbox(1798, 153, 20)
     screenshot_compass, img_array_compass = capture_and_process_region(bbox_compass, "enemy_check_compass")
-    
+    # img_array_compass is a 40x40x3 numpy array. I only want to look at the circle with radius 20
+    center_y, center_x = 20, 20
+    for y in range(40):
+        for x in range(40):
+            if (y - center_y) ** 2 + (x - center_x) ** 2 > 25 ** 2:
+                img_array_compass[y, x, :] = 0  # Set to black outside the circle
+
+    try:
+        # Save the debug image img_array_compass
+        plt.imsave("debug_images/enemies_without_edge.png", img_array_compass)
+    except Exception as e:
+        print(f"Error saving debug image {"enemies_without_edge"}.png:", e)
     if is_red(img_array_compass, 1) or is_yellow(img_array_compass, 1):
         print("Enemy detected on compass!.")
         if use_only_compass:

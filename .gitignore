@@ -1,0 +1,4 @@
+logs/
+__pychache__/
+*.pyc
+debug_images/

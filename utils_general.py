@@ -151,7 +151,7 @@ def is_color(img_array, color_name, r_min=0, r_max=255, g_min=0, g_max=255, b_mi
 
 def is_red(img_array, pixel_threshold=25):
     # Red is typically high red, low green and blue
-    return is_color(img_array, "red", r_min=150, r_max=255, g_min=0, g_max=100, b_min=0, b_max=100, pixel_threshold=pixel_threshold)
+    return is_color(img_array, "red", r_min=128, r_max=255, g_min=0, g_max=100, b_min=0, b_max=100, pixel_threshold=pixel_threshold)
 
 def is_yellow(img_array, pixel_threshold=20):
     # Yellow is typically high red and green, low blue
