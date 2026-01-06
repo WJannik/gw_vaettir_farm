@@ -16,6 +16,7 @@ except ImportError:
         import sys
         sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         from gw_vaettir_bot.utils_general import generate_bbox, generate_center_bbox, capture_and_process_region, is_red, is_yellow, is_object
+        
 # Create a keyboard controller
 keyboard = Controller()
 
@@ -28,7 +29,7 @@ def are_enemies_stacked():
     height, width, _ = np.shape(img_array)
     middel_height = height // 2
     middle_width = width // 2
-    size_of_box = 5
+    size_of_box = 7
     img_array[middel_height-size_of_box:middel_height+size_of_box, middle_width-size_of_box:middle_width+size_of_box, :] = 0
     try:
         # Save the debug image img_array

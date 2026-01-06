@@ -7,41 +7,38 @@ import matplotlib.pyplot as plt
 
 # Try relative imports first, then absolute imports for testing
 try:
-    from . import utils_item
-    from . import utils_enemy
     from . import utils_areas
-    from . import utils_energy_management
+    from . import utils_enemy
     from .utils_skill_management import *
-    from .utils_movement import handle_movement_sequence, stuck
-    from .constants import MOVEMENT_CHUNK_SIZE, SHADOWFORM_DURATION, SHROUD_DURATION, WAYS_DURATION, SPIKE_COOLDOWN, MAX_RUN_TIME
-    from .utils_general import generate_bbox, capture_and_process_region, is_object
+    from .constants import SHADOWFORM_DURATION, SHROUD_DURATION, WAYS_DURATION, MAX_RUN_TIME
     from .utils_plotting import plot_run_times
+    from .phase_movement import MovementPhase
+    from .phase_spike import SpikePhase
+    from .phase_collecting import CollectingPhase
 except ImportError:
     # If relative imports fail, try absolute imports for testing
     try:
-        import utils_item
-        import utils_enemy
         import utils_areas
-        import utils_energy_management
+        import utils_enemy
         from utils_skill_management import *
-        from utils_movement import handle_movement_sequence, stuck
-        from constants import MOVEMENT_CHUNK_SIZE, SHADOWFORM_DURATION, SHROUD_DURATION, WAYS_DURATION, SPIKE_COOLDOWN, MAX_RUN_TIME
-        from utils_general import generate_bbox, capture_and_process_region, is_object
+        from constants import SHADOWFORM_DURATION, SHROUD_DURATION, WAYS_DURATION, MAX_RUN_TIME
         from utils_plotting import plot_run_times
+        from phase_movement import MovementPhase
+        from phase_spike import SpikePhase
+        from phase_collecting import CollectingPhase
     except ImportError:
         # If that fails too, try adding the parent directory to path
         import os
         import sys
         sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        from gw_vaettir_bot import utils_item
-        from gw_vaettir_bot import utils_enemy
         from gw_vaettir_bot import utils_areas
-        from gw_vaettir_bot import utils_energy_management
+        from gw_vaettir_bot import utils_enemy
         from gw_vaettir_bot.utils_skill_management import *
-        from gw_vaettir_bot.utils_movement import handle_movement_sequence, stuck
-        from gw_vaettir_bot.constants import MOVEMENT_CHUNK_SIZE, SHADOWFORM_DURATION, SHROUD_DURATION, WAYS_DURATION, SPIKE_COOLDOWN, MAX_RUN_TIME
-        from gw_vaettir_bot.utils_general import generate_bbox, capture_and_process_region, is_object
+        from gw_vaettir_bot.constants import SHADOWFORM_DURATION, SHROUD_DURATION, WAYS_DURATION, MAX_RUN_TIME
         from gw_vaettir_bot.utils_plotting import plot_run_times
+        from gw_vaettir_bot.phase_movement import MovementPhase
+        from gw_vaettir_bot.phase_spike import SpikePhase
+        from gw_vaettir_bot.phase_collecting import CollectingPhase
 
 def start_farm(number_of_runs):
     """Main function to start the Vaettir farming process."""
@@ -73,11 +70,15 @@ def start_farm(number_of_runs):
         utils_areas.jaga_moraine2jarnskeggi() 
         utils_areas.pick_up_norn_blessing() 
 
+        # Initialize phase handlers
+        movement_phase = MovementPhase()
+        spike_phase = SpikePhase()
+        collecting_phase = CollectingPhase()
+
         # Initialise last casttime of skills
         last_shadowform_cast_time = 0
         last_shroud_of_distress_cast_time = 0
         last_ways_cast_time = 0
-        last_spike_cast_time = 0
         # Flags to track enchanments 
         shadowform_casted = False
         shroud_casted = False
@@ -86,39 +87,7 @@ def start_farm(number_of_runs):
 
         # Phase flags
         phase_movement = True
-        pre_phase_spike = False
-        phase_spike = False
-        phase_collecting = False
-
-        # Other flags
-        nearest_enemy = True
         minimal_enchantment_maintained = False
-        turn_around_done = False
-        stuck_used = False
-
-        # Counter for collecting items
-        counter_irrelevant_items = 0 
-
-        # Movement configuration and state tracking
-        dict_movement_forwards = {
-            "stop_1": 4.0,
-            "move_forward_1": 10.0,
-            "turn_right_1": 0.67,
-            "move_forward_2": 16.0,
-        }
-        dict_movement_backward = {
-            "move_forward_1": 15.0,
-        }
-        final_position_reached_forward = False
-        current_movement_key_forward = None
-        current_movement_key_backward = None
-        current_movement_remaining_forward = 0.0
-        current_movement_remaining_backward = 0.0
-        last_movement_time = 0
-        movement_keys_forward = list(dict_movement_forwards.keys())
-        movement_keys_backward = list(dict_movement_backward.keys())
-        current_movement_index_forward = 0
-        current_movement_index_backward = 0
 
         # Get current time
         start_time = time.time()
@@ -180,133 +149,89 @@ def start_farm(number_of_runs):
                 ways_casted = False
             
             # Collecting phase -------------------------------------------------
-            # Pick up relevant items until 10 irrelevant items are found in a row. 
-            # Start way back by enabling turn around.
-            # Re-enable spike mode if an enemy is detected during collecting.
-
-            if phase_collecting and counter_irrelevant_items < 10:
-                phase_spike = False
+            if collecting_phase.is_collecting():
+                spike_phase.disable_spike_mode()
                 minimal_enchantment_maintained = True
-                if utils_item.check_next_item():
-                    counter_irrelevant_items = 0 
-                    time.sleep(0.3) 
-                else:
-                    counter_irrelevant_items += 1
-                    print("Irrelevant item counter: ", counter_irrelevant_items)
-            if phase_collecting and counter_irrelevant_items >= 10:
-                phase_collecting = False
-                if not turn_around_done:
-                    print("Collecting finished, performing U-turn after collecting")
-                    run_time_collecting += time.time() - last_used_logging_time
-                    last_used_logging_time = time.time()
-                    keyboard.press('x')
+                
+                # Handle enemy detection during collecting
+                if spike_phase.handle_enemy_detection_during_collecting():
+                    collecting_phase.stop_collecting()
+                    minimal_enchantment_maintained = False
                     time.sleep(0.01)
-                    keyboard.release('x')
-                    turn_around_done = True
-            
-            if phase_collecting and utils_enemy.check_next_enemy(use_only_compass=True):
-                print("Enemy detected during collecting, pausing collecting and go back to spike mode")
-                # Re-enable spike mode if an enemy is detected during collecting
-                phase_spike = True
-                phase_collecting = False
-                minimal_enchantment_maintained = False
-                time.sleep(0.01)  
+                    continue
+                
+                # Handle collecting logic
+                result, updated_time = collecting_phase.handle_collecting_logic(last_used_logging_time)
+                
+                if result == "collecting_finished":
+                    run_time_collecting += updated_time
+                    last_used_logging_time = time.time()
+                    movement_phase.perform_turn_around()
+                elif result == "item_picked":
+                    # Item was picked up successfully
+                    pass
+                elif result == "irrelevant_item":
+                    # Irrelevant item found, counter incremented
+                    pass
 
             # Spike phase ------------------------------------------------------
-            # Enable spike phase if final position is reached and no movement for 20 seconds.
-            # Re-enable spike mode if an enemy is detected during collecting.
-            if (final_position_reached_forward and not pre_phase_spike and not phase_spike
-                and not phase_collecting and not turn_around_done):
-                if time.time() - last_movement_time > 30 and not stuck_used:
-                    stuck_used = True
-                    stuck()
-                if time.time() - last_movement_time > 40 or utils_enemy.are_enemies_stacked():
-                    # Enable spike mode, after 60 seconds of no movement or if enemies are stacked.
-                    pre_phase_spike = True
-                    time_for_real_spike_start = time.time() + 5.0
-                    print("No movement for 60 seconds or enemies stacked, enabling spike mode")
-            if pre_phase_spike and time.time() > time_for_real_spike_start:
-                phase_spike = True
-                pre_phase_spike = False
+            # Enable spike phase if final position is reached and no movement for specified time
+            if (movement_phase.final_position_reached_forward and not spike_phase.is_in_pre_spike_phase() 
+                and not spike_phase.is_in_spike_phase() and not collecting_phase.is_collecting() 
+                and not movement_phase.turn_around_done):
+                
+                # Handle stuck detection
+                movement_phase.handle_stuck_detection()
+                
+                # Check if spike mode should be enabled
+                if movement_phase.should_enable_spike_mode(utils_enemy.are_enemies_stacked):
+                    spike_phase.enable_pre_spike_mode()
+                    
+            # Update from pre-spike to spike phase
+            if spike_phase.update_pre_spike_to_spike():
                 run_time_enemies_stacked += time.time() - last_used_logging_time
                 last_used_logging_time = time.time()
-            # Kill the enemies nearby with spike
-            if phase_spike:
-                if ((time_passed_in_seconds - last_shadowform_cast_time > 3.0 or last_shadowform_cast_time == 0)
-                    and time_passed_in_seconds - last_shadowform_cast_time < 18.0 
-                    and (time_passed_in_seconds - last_spike_cast_time >= SPIKE_COOLDOWN)):
-                    if not utils_enemy.check_next_enemy():
-                        time.sleep(0.1)
-                        if not utils_enemy.check_next_enemy():
-                            print("Collecting since no enemies detected")
-                            phase_collecting = True
-                            counter_irrelevant_items = 0
-                            run_time_spike += time.time() - last_used_logging_time
-                            last_used_logging_time = time.time()
-                            continue
-                    # Check if mana is above 60% before casting
-                    energy_img_array = utils_energy_management.get_energy_level()
-                    if energy_img_array < 60.0:
-                        print(f"Mana below 60%, skipping Wastrel's Demise cast with mana at {energy_img_array}%")
-                        continue
-                    if utils_enemy.check_next_enemy():
-                        cast_spike(nearest_enemy)
-                    # In the first 35 second alternate between nearest and next enemy, afterwards only nearest
-                    if time.time() - last_used_logging_time < 30.0:
-                        nearest_enemy = not nearest_enemy  # Alternate between nearest and next enemy
-                    else:
-                        nearest_enemy = True  # Always nearest enemy
-                    last_spike_cast_time = time_passed_in_seconds
-                    continue
+                
+            # Handle spike logic
+            result, updated_time = spike_phase.handle_spike_logic(
+                time_passed_in_seconds, last_shadowform_cast_time, last_used_logging_time
+            )
+            
+            if result == "start_collecting":
+                collecting_phase.start_collecting()
+                run_time_spike += updated_time
+                last_used_logging_time = time.time()
+                continue
+            elif result == "spike_cast":
+                continue
 
             # Handle movement when not casting spells and not collecting
-            if (phase_movement and not phase_collecting and not phase_spike and 
-                current_movement_index_forward < len(movement_keys_forward) and
+            if (phase_movement and not collecting_phase.is_collecting() and not spike_phase.is_in_spike_phase() and
                 shadowform_casted and shroud_casted and ways_casted):
                 
-                current_movement_key_forward, current_movement_remaining_forward, current_movement_index_forward, sequence_complete = handle_movement_sequence(
-                    dict_movement_forwards, current_movement_key_forward, current_movement_remaining_forward, 
-                    current_movement_index_forward, MOVEMENT_CHUNK_SIZE, "forward"
-                )
+                movement_complete = movement_phase.handle_forward_movement(shadowform_casted, shroud_casted, ways_casted)
                 
-                # Check if all movements are complete
-                if sequence_complete:
+                if movement_complete:
                     phase_movement = False
-                    final_position_reached_forward = True
-                    last_movement_time = time.time()
                     run_time_forward += time.time() - last_used_logging_time
                     last_used_logging_time = time.time()
 
-            # Use second movement dictionary to go back
-            if (final_position_reached_forward and not phase_spike and not phase_collecting and
-                current_movement_index_backward < len(movement_keys_backward) 
-                and turn_around_done):
-                # Check if jarnskeggi is found
-                keyboard.press('v')
-                time.sleep(0.01)
-                keyboard.release('v')
-                time.sleep(0.01)
-                bbox = generate_bbox(860, 55, 180, 15)
-                screenshot, img_array = capture_and_process_region(bbox, "npc_check")
-                if is_object(img_array, "jarnskeggi", print_diff=False, asset_path="gw_vaettir_bot/assets/npcs"):
+            # Handle backward movement
+            if (movement_phase.final_position_reached_forward and not spike_phase.is_in_spike_phase() 
+                and not collecting_phase.is_collecting() and movement_phase.turn_around_done):
+                
+                result = movement_phase.handle_backward_movement()
+                
+                if result == "found_npc":
                     break
-                current_movement_key_backward, current_movement_remaining_backward, current_movement_index_backward, sequence_complete = handle_movement_sequence(
-                    dict_movement_backward, current_movement_key_backward, current_movement_remaining_backward, 
-                    current_movement_index_backward, MOVEMENT_CHUNK_SIZE, "backward"
-                )
-                # Check if all movements are complete
-                if sequence_complete:
-                    final_position_reached_forward = False
-                    current_movement_index_forward = 0
-                    current_movement_key = None
+                elif result == "sequence_complete":
                     break
                 
-            # Fail safe to start collecting after 300 seconds. Something seem to be wrong if it reaches here
-            if time_passed_in_seconds > 300 and not phase_collecting:
+            # Fail safe to start collecting after 300 seconds
+            if time_passed_in_seconds > 300 and not collecting_phase.is_collecting():
                 print(f"Starting collecting after 300 seconds at {time_passed_in_seconds} seconds")
-                phase_collecting = True
-                if phase_spike:
-                    phase_spike = False  # Disable spike mode when starting collecting
+                collecting_phase.start_collecting()
+                spike_phase.disable_spike_mode()
 
             time.sleep(0.01)  # Sleep to prevent high CPU usage
 
@@ -338,5 +263,5 @@ if __name__ == "__main__":
     current_dir = os.path.dirname(os.path.abspath(__file__))
     if current_dir not in sys.path:
         sys.path.insert(0, current_dir)
-    number_of_runs = 10
+    number_of_runs = 1
     start_farm(number_of_runs)

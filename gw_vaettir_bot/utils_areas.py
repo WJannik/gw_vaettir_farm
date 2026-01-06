@@ -24,7 +24,6 @@ keyboard = Controller()
 mouse_controller = mouse.Controller()
 
 def bjora_marches2jaga_moraine(time_to_wait= 10.0):
-    print("Setting area from Bjora Marches to Jaga Moraine")
     keyboard.press('ö')
     time.sleep(0.01)
     keyboard.release('ö')
@@ -42,7 +41,6 @@ def bjora_marches2jaga_moraine(time_to_wait= 10.0):
         print("Area not recognized. Cannot change area.")
 
 def jaga_moraine2bjora_marches(time_to_wait=7.5):
-    print("Setting area from Jaga Moraine to Bjora Marchövöes")
     keyboard.press('ö')
     time.sleep(0.01)
     keyboard.release('ö')
@@ -60,7 +58,6 @@ def jaga_moraine2bjora_marches(time_to_wait=7.5):
         print("Area not recognized. Cannot change area.")
 
 def jaga_moraine2jarnskeggi(time_to_wait=7.5):
-    print("Go from Jaga Moraine to Jarnskeggi")
     # Simulate pressing keys to set the area
     keyboard.press('v')
     time.sleep(0.02)
@@ -80,8 +77,7 @@ def jaga_moraine2jarnskeggi(time_to_wait=7.5):
         print("NPC not recognized. Cannot change area.")
 
 def pick_up_norn_blessing():
-    print("Picking up Norn Blessing")
-    # Left mouse click at x = 1000 and y = 1000 to get norn blessing
+    # Left mouse click at x = 900 and y = 575 to get norn blessing
     click_at_position(900, 575)
 
 if __name__ == "__main__":
