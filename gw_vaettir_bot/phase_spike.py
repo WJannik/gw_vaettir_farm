@@ -4,24 +4,24 @@ import time
 
 # Try relative imports first, then absolute imports for testing
 try:
-    from . import utils_enemy
-    from . import utils_energy_management
-    from .utils_skill_management import cast_spike
-    from .constants import SPIKE_COOLDOWN
+    from .utils import utils_enemy
+    from .utils import utils_energy_management
+    from .utils.utils_skill_management import cast_spike
+    from .utils.constants import SPIKE_COOLDOWN
 except ImportError:
     try:
-        import utils_enemy
-        import utils_energy_management
-        from utils_skill_management import cast_spike
-        from constants import SPIKE_COOLDOWN
+        from utils import utils_enemy
+        from utils import utils_energy_management
+        from utils.utils_skill_management import cast_spike
+        from utils.constants import SPIKE_COOLDOWN
     except ImportError:
         import os
         import sys
         sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        from gw_vaettir_bot import utils_enemy
-        from gw_vaettir_bot import utils_energy_management
-        from gw_vaettir_bot.utils_skill_management import cast_spike
-        from gw_vaettir_bot.constants import SPIKE_COOLDOWN
+        from gw_vaettir_bot.utils import utils_enemy
+        from gw_vaettir_bot.utils import utils_energy_management
+        from gw_vaettir_bot.utils.utils_skill_management import cast_spike
+        from gw_vaettir_bot.utils.constants import SPIKE_COOLDOWN
 
 
 class SpikePhase:

@@ -17,13 +17,13 @@ except ImportError:
         import os
         import sys
         sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        from gw_vaettir_bot.utils_general import pick_up_selected_object, click_at_position, generate_bbox, capture_and_process_region, is_object
+        from gw_vaettir_bot.utils.utils_general import pick_up_selected_object, click_at_position, generate_bbox, capture_and_process_region, is_object
 # Create a keyboard controller
 keyboard = Controller()
 # Create a mouse controller
 mouse_controller = mouse.Controller()
 
-def bjora_marches2jaga_moraine(time_to_wait= 10.0):
+def bjora_marches2jaga_moraine(time_to_wait= 8.0):
     keyboard.press('ö')
     time.sleep(0.01)
     keyboard.release('ö')
@@ -57,7 +57,7 @@ def jaga_moraine2bjora_marches(time_to_wait=7.5):
     else:
         print("Area not recognized. Cannot change area.")
 
-def jaga_moraine2jarnskeggi(time_to_wait=7.5):
+def jaga_moraine2jarnskeggi(time_to_wait=6.5):
     # Simulate pressing keys to set the area
     keyboard.press('v')
     time.sleep(0.02)

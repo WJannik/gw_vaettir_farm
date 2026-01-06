@@ -4,18 +4,18 @@ import time
 
 # Try relative imports first, then absolute imports for testing
 try:
-    from .utils_skill_management import *
-    from .constants import SHADOWFORM_DURATION, SHROUD_DURATION, WAYS_DURATION
+    from .utils.utils_skill_management import *
+    from .utils.constants import SHADOWFORM_DURATION, SHROUD_DURATION, WAYS_DURATION
 except ImportError:
     try:
-        from utils_skill_management import *
-        from constants import SHADOWFORM_DURATION, SHROUD_DURATION, WAYS_DURATION
+        from utils.utils_skill_management import *
+        from utils.constants import SHADOWFORM_DURATION, SHROUD_DURATION, WAYS_DURATION
     except ImportError:
         import os
         import sys
         sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        from gw_vaettir_bot.utils_skill_management import *
-        from gw_vaettir_bot.constants import SHADOWFORM_DURATION, SHROUD_DURATION, WAYS_DURATION
+        from gw_vaettir_bot.utils.utils_skill_management import *
+        from gw_vaettir_bot.utils.constants import SHADOWFORM_DURATION, SHROUD_DURATION, WAYS_DURATION
 
 
 class EnchantmentManager:

@@ -2,7 +2,6 @@
 
 Curial:
 add assertions
-reduce complexity of main function
 
 Nice to have:
 compass for orientation

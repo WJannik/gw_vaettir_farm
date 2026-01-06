@@ -13,7 +13,7 @@ except ImportError:
         import os
         import sys
         sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        from gw_vaettir_bot.constants import AFTERCAST_DELAY
+        from gw_vaettir_bot.utils.constants import AFTERCAST_DELAY
 # Create a keyboard controller
 keyboard = Controller()
 

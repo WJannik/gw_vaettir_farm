@@ -7,10 +7,10 @@ import matplotlib.pyplot as plt
 
 # Try relative imports first, then absolute imports for testing
 try:
-    from . import utils_areas
-    from . import utils_enemy
-    from .constants import MAX_RUN_TIME
-    from .utils_plotting import plot_run_times
+    from .utils import utils_areas
+    from .utils import utils_enemy
+    from .utils.constants import MAX_RUN_TIME
+    from .utils.utils_plotting import plot_run_times
     from .phase_movement import MovementPhase
     from .phase_spike import SpikePhase
     from .phase_collecting import CollectingPhase
@@ -18,10 +18,10 @@ try:
 except ImportError:
     # If relative imports fail, try absolute imports for testing
     try:
-        import utils_areas
-        import utils_enemy
-        from constants import MAX_RUN_TIME
-        from utils_plotting import plot_run_times
+        from utils import utils_areas
+        from utils import utils_enemy
+        from utils.constants import MAX_RUN_TIME
+        from utils.utils_plotting import plot_run_times
         from phase_movement import MovementPhase
         from phase_spike import SpikePhase
         from phase_collecting import CollectingPhase
@@ -31,10 +31,10 @@ except ImportError:
         import os
         import sys
         sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        from gw_vaettir_bot import utils_areas
-        from gw_vaettir_bot import utils_enemy
-        from gw_vaettir_bot.constants import MAX_RUN_TIME
-        from gw_vaettir_bot.utils_plotting import plot_run_times
+        from gw_vaettir_bot.utils import utils_areas
+        from gw_vaettir_bot.utils import utils_enemy
+        from gw_vaettir_bot.utils.constants import MAX_RUN_TIME
+        from gw_vaettir_bot.utils.utils_plotting import plot_run_times
         from gw_vaettir_bot.phase_movement import MovementPhase
         from gw_vaettir_bot.phase_spike import SpikePhase
         from gw_vaettir_bot.phase_collecting import CollectingPhase
@@ -192,7 +192,7 @@ def start_farm(number_of_runs):
 
     # Plot the run times using compact data
     plot_run_times(run_data)
-
+5
 
 if __name__ == "__main__":
     # Add current directory to path for testing
@@ -201,5 +201,5 @@ if __name__ == "__main__":
     current_dir = os.path.dirname(os.path.abspath(__file__))
     if current_dir not in sys.path:
         sys.path.insert(0, current_dir)
-    number_of_runs = 5
+    number_of_runs = 20
     start_farm(number_of_runs)

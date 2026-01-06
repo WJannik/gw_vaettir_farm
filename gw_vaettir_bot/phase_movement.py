@@ -5,21 +5,21 @@ from pynput.keyboard import Controller
 
 # Try relative imports first, then absolute imports for testing
 try:
-    from .utils_movement import handle_movement_sequence, stuck
-    from .constants import MOVEMENT_CHUNK_SIZE
-    from .utils_general import generate_bbox, capture_and_process_region, is_object
+    from .utils.utils_movement import handle_movement_sequence, stuck
+    from .utils.constants import MOVEMENT_CHUNK_SIZE
+    from .utils.utils_general import generate_bbox, capture_and_process_region, is_object
 except ImportError:
     try:
-        from utils_movement import handle_movement_sequence, stuck
-        from constants import MOVEMENT_CHUNK_SIZE
-        from utils_general import generate_bbox, capture_and_process_region, is_object
+        from utils.utils_movement import handle_movement_sequence, stuck
+        from utils.constants import MOVEMENT_CHUNK_SIZE
+        from utils.utils_general import generate_bbox, capture_and_process_region, is_object
     except ImportError:
         import os
         import sys
         sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        from gw_vaettir_bot.utils_movement import handle_movement_sequence, stuck
-        from gw_vaettir_bot.constants import MOVEMENT_CHUNK_SIZE
-        from gw_vaettir_bot.utils_general import generate_bbox, capture_and_process_region, is_object
+        from gw_vaettir_bot.utils.utils_movement import handle_movement_sequence, stuck
+        from gw_vaettir_bot.utils.constants import MOVEMENT_CHUNK_SIZE
+        from gw_vaettir_bot.utils.utils_general import generate_bbox, capture_and_process_region, is_object
 
 
 class MovementPhase:

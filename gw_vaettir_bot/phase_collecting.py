@@ -4,15 +4,15 @@ import time
 
 # Try relative imports first, then absolute imports for testing
 try:
-    from . import utils_item
+    from .utils import utils_item
 except ImportError:
     try:
-        import utils_item
+        from utils import utils_item
     except ImportError:
         import os
         import sys
         sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        from gw_vaettir_bot import utils_item
+        from gw_vaettir_bot.utils import utils_item
 
 
 class CollectingPhase:

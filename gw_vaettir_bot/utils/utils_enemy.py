@@ -15,7 +15,7 @@ except ImportError:
         import os
         import sys
         sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        from gw_vaettir_bot.utils_general import generate_bbox, generate_center_bbox, capture_and_process_region, is_red, is_yellow, is_object
+        from gw_vaettir_bot.utils.utils_general import generate_bbox, generate_center_bbox, capture_and_process_region, is_red, is_yellow, is_object
         
 # Create a keyboard controller
 keyboard = Controller()
