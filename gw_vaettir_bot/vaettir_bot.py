@@ -9,23 +9,23 @@ import matplotlib.pyplot as plt
 try:
     from . import utils_areas
     from . import utils_enemy
-    from .utils_skill_management import *
-    from .constants import SHADOWFORM_DURATION, SHROUD_DURATION, WAYS_DURATION, MAX_RUN_TIME
+    from .constants import MAX_RUN_TIME
     from .utils_plotting import plot_run_times
     from .phase_movement import MovementPhase
     from .phase_spike import SpikePhase
     from .phase_collecting import CollectingPhase
+    from .enchantment_management import EnchantmentManager
 except ImportError:
     # If relative imports fail, try absolute imports for testing
     try:
         import utils_areas
         import utils_enemy
-        from utils_skill_management import *
-        from constants import SHADOWFORM_DURATION, SHROUD_DURATION, WAYS_DURATION, MAX_RUN_TIME
+        from constants import MAX_RUN_TIME
         from utils_plotting import plot_run_times
         from phase_movement import MovementPhase
         from phase_spike import SpikePhase
         from phase_collecting import CollectingPhase
+        from enchantment_management import EnchantmentManager
     except ImportError:
         # If that fails too, try adding the parent directory to path
         import os
@@ -33,33 +33,32 @@ except ImportError:
         sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         from gw_vaettir_bot import utils_areas
         from gw_vaettir_bot import utils_enemy
-        from gw_vaettir_bot.utils_skill_management import *
-        from gw_vaettir_bot.constants import SHADOWFORM_DURATION, SHROUD_DURATION, WAYS_DURATION, MAX_RUN_TIME
+        from gw_vaettir_bot.constants import MAX_RUN_TIME
         from gw_vaettir_bot.utils_plotting import plot_run_times
         from gw_vaettir_bot.phase_movement import MovementPhase
         from gw_vaettir_bot.phase_spike import SpikePhase
         from gw_vaettir_bot.phase_collecting import CollectingPhase
+        from gw_vaettir_bot.enchantment_management import EnchantmentManager
 
 def start_farm(number_of_runs):
     """Main function to start the Vaettir farming process."""
     # Create a keyboard controller
     keyboard = Controller()
 
-    # Log the time of each run
-    run_times = []
-    run_times_running_forward = []
-    run_times_running_backward = []
-    run_times_spike_phase = []
-    run_times_collecting_phase = []
-    run_times_waiting_for_stacked_enemies = []
+    # Compact run times tracking
+    run_data = {
+        'total': [],
+        'forward': [],
+        'backward': [],
+        'spike': [],
+        'collecting': [],
+        'enemies_stacked': []
+    }
     
     for run_number in range(number_of_runs):
         start_time_run = time.time()
-        run_time_forward = 0
-        run_time_backward = 0
-        run_time_spike = 0
-        run_time_collecting = 0
-        run_time_enemies_stacked = 0
+        # Compact run time tracking
+        times = {'forward': 0, 'backward': 0, 'spike': 0, 'collecting': 0, 'enemies_stacked': 0}
         last_used_logging_time = time.time()
         print(f"Starting the {run_number+1}-th run in ...")
         for countdown in range(3, 0, -1):
@@ -74,16 +73,7 @@ def start_farm(number_of_runs):
         movement_phase = MovementPhase()
         spike_phase = SpikePhase()
         collecting_phase = CollectingPhase()
-
-        # Initialise last casttime of skills
-        last_shadowform_cast_time = 0
-        last_shroud_of_distress_cast_time = 0
-        last_ways_cast_time = 0
-        # Flags to track enchanments 
-        shadowform_casted = False
-        shroud_casted = False
-        ways_casted = False
-        mantra_casted = False
+        enchantment_manager = EnchantmentManager()
 
         # Phase flags
         phase_movement = True
@@ -95,60 +85,17 @@ def start_farm(number_of_runs):
         while True and time.time() - start_time < MAX_RUN_TIME:
             time_passed_in_seconds = time.time() - start_time
 
-            # Shadowform and other enchantments management in order tank the enmeies ---------------
-
-            # Cast Shadowform every 20 seconds after it was last casted
-            if ((time_passed_in_seconds - last_shadowform_cast_time)%SHADOWFORM_DURATION >= 0.0 and 
-                (time_passed_in_seconds -  last_shadowform_cast_time)%SHADOWFORM_DURATION < 2.0 
-                and not shadowform_casted):
-                cast_shadowform()
-                shadowform_casted = True
-                last_shadowform_cast_time = time.time() - start_time
-                continue
-            # Reset flags after 18 seconds such that it maintains the enchantment for sure
-            if shadowform_casted and time_passed_in_seconds - last_shadowform_cast_time >= 19.5:
-                shadowform_casted = False
-
-            # Cast Mantra of earth at least 2 seconds after shadowform was casted 
-            if (not mantra_casted and time_passed_in_seconds> 20 and
-                time_passed_in_seconds - last_shadowform_cast_time > 1.5 and
-                time_passed_in_seconds - last_shadowform_cast_time < 5.0
-                and not minimal_enchantment_maintained):
-                cast_mantra_of_earth()
-                mantra_casted = True
-                continue
-
-            # Reset mantra_casted flag
-            if mantra_casted and time_passed_in_seconds - last_shadowform_cast_time >= 5.0:
-                mantra_casted = False
-
-            # Cast Shroud of Distress every 45 seconds  after it was last casted
-            if ((time_passed_in_seconds - last_shroud_of_distress_cast_time)%SHROUD_DURATION > 0.0 
-                and time_passed_in_seconds - last_shadowform_cast_time < 18.0
-                and not shroud_casted):
-                cast_shroud_of_distress()
-                shroud_casted = True
-                last_shroud_of_distress_cast_time = time.time() - start_time
-                continue
-
-            # Reset flags after 45 seconds
-            if shroud_casted and time_passed_in_seconds - last_shroud_of_distress_cast_time >= SHROUD_DURATION:
-                shroud_casted = False
-
-            # Cast Way of Perfection and Master every 30 seconds after it was last casted
-            if ((time_passed_in_seconds - last_ways_cast_time)%WAYS_DURATION > 0.0 
-                and time_passed_in_seconds - last_shadowform_cast_time < 18.0 
-                and not ways_casted and not minimal_enchantment_maintained):
-                cast_way_of_perfection_and_master()
-                ways_casted = True
-                last_ways_cast_time = time.time() - start_time
-                continue
-
-            # Reset flags after 30 seconds
-            if ways_casted and time_passed_in_seconds - last_ways_cast_time >= WAYS_DURATION:
-                ways_casted = False
+            # Handle enchantments management
+            if enchantment_manager.update_enchantments(time_passed_in_seconds, minimal_enchantment_maintained):
+                continue  # Skip other logic this iteration if an enchantment was cast
             
-            # Collecting phase -------------------------------------------------
+            # Get current enchantment states
+            enchantment_states = enchantment_manager.get_enchantment_states()
+            shadowform_casted = enchantment_states['shadowform']
+            shroud_casted = enchantment_states['shroud']
+            ways_casted = enchantment_states['ways']
+            
+            # Collecting phase 
             if collecting_phase.is_collecting():
                 spike_phase.disable_spike_mode()
                 minimal_enchantment_maintained = True
@@ -164,17 +111,11 @@ def start_farm(number_of_runs):
                 result, updated_time = collecting_phase.handle_collecting_logic(last_used_logging_time)
                 
                 if result == "collecting_finished":
-                    run_time_collecting += updated_time
+                    times['collecting'] += updated_time
                     last_used_logging_time = time.time()
                     movement_phase.perform_turn_around()
-                elif result == "item_picked":
-                    # Item was picked up successfully
-                    pass
-                elif result == "irrelevant_item":
-                    # Irrelevant item found, counter incremented
-                    pass
 
-            # Spike phase ------------------------------------------------------
+            # Spike phase 
             # Enable spike phase if final position is reached and no movement for specified time
             if (movement_phase.final_position_reached_forward and not spike_phase.is_in_pre_spike_phase() 
                 and not spike_phase.is_in_spike_phase() and not collecting_phase.is_collecting() 
@@ -189,17 +130,17 @@ def start_farm(number_of_runs):
                     
             # Update from pre-spike to spike phase
             if spike_phase.update_pre_spike_to_spike():
-                run_time_enemies_stacked += time.time() - last_used_logging_time
+                times['enemies_stacked'] += time.time() - last_used_logging_time
                 last_used_logging_time = time.time()
                 
             # Handle spike logic
             result, updated_time = spike_phase.handle_spike_logic(
-                time_passed_in_seconds, last_shadowform_cast_time, last_used_logging_time
+                time_passed_in_seconds, enchantment_manager.get_last_shadowform_cast_time(), last_used_logging_time
             )
             
             if result == "start_collecting":
                 collecting_phase.start_collecting()
-                run_time_spike += updated_time
+                times['spike'] += updated_time
                 last_used_logging_time = time.time()
                 continue
             elif result == "spike_cast":
@@ -213,7 +154,7 @@ def start_farm(number_of_runs):
                 
                 if movement_complete:
                     phase_movement = False
-                    run_time_forward += time.time() - last_used_logging_time
+                    times['forward'] += time.time() - last_used_logging_time
                     last_used_logging_time = time.time()
 
             # Handle backward movement
@@ -239,21 +180,18 @@ def start_farm(number_of_runs):
         utils_areas.jaga_moraine2jarnskeggi(12.0)
         utils_areas.jaga_moraine2bjora_marches(10.0)
 
-        run_time_backward  += time.time() - last_used_logging_time
-        # Log the time of the run
-        run_times.append(time.time() - start_time_run)
-        # Each phase time logging
-        run_times_running_forward.append(run_time_forward)
-        run_times_waiting_for_stacked_enemies.append(run_time_enemies_stacked)
-        run_times_spike_phase.append(run_time_spike)
-        run_times_collecting_phase.append(run_time_collecting)
-        run_times_running_backward.append(run_time_backward)
+        times['backward'] += time.time() - last_used_logging_time
+        
+        # Log all run data compactly
+        total_time = time.time() - start_time_run
+        run_data['total'].append(total_time)
+        for phase in ['forward', 'backward', 'spike', 'collecting', 'enemies_stacked']:
+            run_data[phase].append(times[phase])
 
-        print(f"Run {run_number+1} completed in {time.time() - start_time_run} seconds.")
+        print(f"Run {run_number+1} completed in {total_time:.2f} seconds.")
 
-    # Plot the run times
-    plot_run_times(run_times, run_times_running_forward, run_times_waiting_for_stacked_enemies,
-                   run_times_spike_phase, run_times_collecting_phase, run_times_running_backward, number_of_runs)
+    # Plot the run times using compact data
+    plot_run_times(run_data)
 
 
 if __name__ == "__main__":
@@ -263,5 +201,5 @@ if __name__ == "__main__":
     current_dir = os.path.dirname(os.path.abspath(__file__))
     if current_dir not in sys.path:
         sys.path.insert(0, current_dir)
-    number_of_runs = 1
+    number_of_runs = 5
     start_farm(number_of_runs)

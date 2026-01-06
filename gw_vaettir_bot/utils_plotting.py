@@ -2,9 +2,12 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 
-def plot_run_times(run_times, run_times_running_forward, run_times_waiting_for_stacked_enemies, 
-                   run_times_spike_phase, run_times_collecting_phase, run_times_running_backward, number_of_runs):
+def plot_run_times(run_data):
     """Plot the run times as a stacked bar chart."""
+    # Extract data from run_data dictionary
+    run_times = run_data['total']
+    number_of_runs = len(run_times)
+    
     # Plot the run times as stacked bar chart
     current_time = time.strftime("%Y%m%d-%H%M%S")
 
@@ -12,11 +15,11 @@ def plot_run_times(run_times, run_times_running_forward, run_times_waiting_for_s
     run_numbers = list(range(1, number_of_runs+1))
 
     # Convert lists to numpy arrays for easier stacking calculations
-    forward_times = np.array(run_times_running_forward)
-    waiting_times = np.array(run_times_waiting_for_stacked_enemies)
-    spike_times = np.array(run_times_spike_phase)
-    collecting_times = np.array(run_times_collecting_phase)
-    backward_times = np.array(run_times_running_backward)
+    forward_times = np.array(run_data['forward'])
+    waiting_times = np.array(run_data['enemies_stacked'])
+    spike_times = np.array(run_data['spike'])
+    collecting_times = np.array(run_data['collecting'])
+    backward_times = np.array(run_data['backward'])
 
     # Create the stacked bars
     fig, ax = plt.subplots(figsize=(12, 8))
