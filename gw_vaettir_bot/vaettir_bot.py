@@ -13,8 +13,9 @@ try:
     from . import utils_energy_management
     from .utils_skill_management import *
     from .utils_movement import handle_movement_sequence, stuck
-    from .constants import MOVEMENT_CHUNK_SIZE
+    from .constants import MOVEMENT_CHUNK_SIZE, SHADOWFORM_DURATION, SHROUD_DURATION, WAYS_DURATION, SPIKE_COOLDOWN, MAX_RUN_TIME
     from .utils_general import generate_bbox, capture_and_process_region, is_object
+    from .utils_plotting import plot_run_times
 except ImportError:
     # If relative imports fail, try absolute imports for testing
     try:
@@ -24,8 +25,9 @@ except ImportError:
         import utils_energy_management
         from utils_skill_management import *
         from utils_movement import handle_movement_sequence, stuck
-        from constants import MOVEMENT_CHUNK_SIZE
+        from constants import MOVEMENT_CHUNK_SIZE, SHADOWFORM_DURATION, SHROUD_DURATION, WAYS_DURATION, SPIKE_COOLDOWN, MAX_RUN_TIME
         from utils_general import generate_bbox, capture_and_process_region, is_object
+        from utils_plotting import plot_run_times
     except ImportError:
         # If that fails too, try adding the parent directory to path
         import os
@@ -37,9 +39,9 @@ except ImportError:
         from gw_vaettir_bot import utils_energy_management
         from gw_vaettir_bot.utils_skill_management import *
         from gw_vaettir_bot.utils_movement import handle_movement_sequence, stuck
-        from gw_vaettir_bot.constants import MOVEMENT_CHUNK_SIZE
+        from gw_vaettir_bot.constants import MOVEMENT_CHUNK_SIZE, SHADOWFORM_DURATION, SHROUD_DURATION, WAYS_DURATION, SPIKE_COOLDOWN, MAX_RUN_TIME
         from gw_vaettir_bot.utils_general import generate_bbox, capture_and_process_region, is_object
-
+        from gw_vaettir_bot.utils_plotting import plot_run_times
 
 def start_farm(number_of_runs):
     """Main function to start the Vaettir farming process."""
@@ -101,7 +103,7 @@ def start_farm(number_of_runs):
         dict_movement_forwards = {
             "stop_1": 4.0,
             "move_forward_1": 10.0,
-            "turn_right_1": 0.63,
+            "turn_right_1": 0.67,
             "move_forward_2": 16.0,
         }
         dict_movement_backward = {
@@ -121,14 +123,14 @@ def start_farm(number_of_runs):
         # Get current time
         start_time = time.time()
 
-        while True and time.time() - start_time < 500:
+        while True and time.time() - start_time < MAX_RUN_TIME:
             time_passed_in_seconds = time.time() - start_time
 
             # Shadowform and other enchantments management in order tank the enmeies ---------------
 
             # Cast Shadowform every 20 seconds after it was last casted
-            if ((time_passed_in_seconds - last_shadowform_cast_time)%20 >= 0.0 and 
-                (time_passed_in_seconds -  last_shadowform_cast_time)%20 < 2.0 
+            if ((time_passed_in_seconds - last_shadowform_cast_time)%SHADOWFORM_DURATION >= 0.0 and 
+                (time_passed_in_seconds -  last_shadowform_cast_time)%SHADOWFORM_DURATION < 2.0 
                 and not shadowform_casted):
                 cast_shadowform()
                 shadowform_casted = True
@@ -140,19 +142,19 @@ def start_farm(number_of_runs):
 
             # Cast Mantra of earth at least 2 seconds after shadowform was casted 
             if (not mantra_casted and time_passed_in_seconds> 20 and
-                time_passed_in_seconds - last_shadowform_cast_time > 1.0 and
-                time_passed_in_seconds - last_shadowform_cast_time < 3.0
+                time_passed_in_seconds - last_shadowform_cast_time > 1.5 and
+                time_passed_in_seconds - last_shadowform_cast_time < 5.0
                 and not minimal_enchantment_maintained):
                 cast_mantra_of_earth()
                 mantra_casted = True
                 continue
 
             # Reset mantra_casted flag
-            if mantra_casted and time_passed_in_seconds - last_shadowform_cast_time >= 3.5:
+            if mantra_casted and time_passed_in_seconds - last_shadowform_cast_time >= 5.0:
                 mantra_casted = False
 
             # Cast Shroud of Distress every 45 seconds  after it was last casted
-            if ((time_passed_in_seconds - last_shroud_of_distress_cast_time)%45 > 0.0 
+            if ((time_passed_in_seconds - last_shroud_of_distress_cast_time)%SHROUD_DURATION > 0.0 
                 and time_passed_in_seconds - last_shadowform_cast_time < 18.0
                 and not shroud_casted):
                 cast_shroud_of_distress()
@@ -161,11 +163,11 @@ def start_farm(number_of_runs):
                 continue
 
             # Reset flags after 45 seconds
-            if shroud_casted and time_passed_in_seconds - last_shroud_of_distress_cast_time >= 45.0:
+            if shroud_casted and time_passed_in_seconds - last_shroud_of_distress_cast_time >= SHROUD_DURATION:
                 shroud_casted = False
 
             # Cast Way of Perfection and Master every 30 seconds after it was last casted
-            if ((time_passed_in_seconds - last_ways_cast_time)%30 > 0.0 
+            if ((time_passed_in_seconds - last_ways_cast_time)%WAYS_DURATION > 0.0 
                 and time_passed_in_seconds - last_shadowform_cast_time < 18.0 
                 and not ways_casted and not minimal_enchantment_maintained):
                 cast_way_of_perfection_and_master()
@@ -174,7 +176,7 @@ def start_farm(number_of_runs):
                 continue
 
             # Reset flags after 30 seconds
-            if ways_casted and time_passed_in_seconds - last_ways_cast_time >= 30.0:
+            if ways_casted and time_passed_in_seconds - last_ways_cast_time >= WAYS_DURATION:
                 ways_casted = False
             
             # Collecting phase -------------------------------------------------
@@ -232,7 +234,7 @@ def start_farm(number_of_runs):
             if phase_spike:
                 if ((time_passed_in_seconds - last_shadowform_cast_time > 3.0 or last_shadowform_cast_time == 0)
                     and time_passed_in_seconds - last_shadowform_cast_time < 18.0 
-                    and (time_passed_in_seconds - last_spike_cast_time >= 3.0)):
+                    and (time_passed_in_seconds - last_spike_cast_time >= SPIKE_COOLDOWN)):
                     if not utils_enemy.check_next_enemy():
                         time.sleep(0.1)
                         if not utils_enemy.check_next_enemy():
@@ -250,7 +252,7 @@ def start_farm(number_of_runs):
                     if utils_enemy.check_next_enemy():
                         cast_spike(nearest_enemy)
                     # In the first 35 second alternate between nearest and next enemy, afterwards only nearest
-                    if time.time() - last_used_logging_time < 40:
+                    if time.time() - last_used_logging_time < 30.0:
                         nearest_enemy = not nearest_enemy  # Alternate between nearest and next enemy
                     else:
                         nearest_enemy = True  # Always nearest enemy
@@ -324,54 +326,17 @@ def start_farm(number_of_runs):
 
         print(f"Run {run_number+1} completed in {time.time() - start_time_run} seconds.")
 
-    # Plot the run times as stacked bar chart
-    current_time = time.strftime("%Y%m%d-%H%M%S")
-
-    # Debug: Print the data to see what we have
-    print("Debug - Data lengths:")
-    print(f"Forward times: {len(run_times_running_forward)} values: {run_times_running_forward}")
-    print(f"Waiting times: {len(run_times_waiting_for_stacked_enemies)} values: {run_times_waiting_for_stacked_enemies}")
-    print(f"Spike times: {len(run_times_spike_phase)} values: {run_times_spike_phase}")
-    print(f"Collecting times: {len(run_times_collecting_phase)} values: {run_times_collecting_phase}")
-    print(f"Backward times: {len(run_times_running_backward)} values: {run_times_running_backward}")
-    print(f"Total run times: {run_times}")
-
-    # Create stacked bar chart
-    run_numbers = list(range(1, number_of_runs+1))
-
-    # Convert lists to numpy arrays for easier stacking calculations
-    forward_times = np.array(run_times_running_forward)
-    waiting_times = np.array(run_times_waiting_for_stacked_enemies)
-    spike_times = np.array(run_times_spike_phase)
-    collecting_times = np.array(run_times_collecting_phase)
-    backward_times = np.array(run_times_running_backward)
-
-    # Create the stacked bars
-    fig, ax = plt.subplots(figsize=(12, 8))
-    width = 0.8
-
-    # Stack the bars properly - each phase on top of the previous
-    ax.bar(run_numbers, forward_times, width, label='Running Forward', color='#1f77b4')
-    ax.bar(run_numbers, waiting_times, width, bottom=forward_times, label='Waiting for Stacked Enemies', color="#b4670e")
-    ax.bar(run_numbers, spike_times, width, bottom=forward_times + waiting_times, label='Spike Phase', color="#A10C2D")
-    ax.bar(run_numbers, collecting_times, width, bottom=forward_times + waiting_times + spike_times, label='Collecting Phase', color="#4116a3")
-    ax.bar(run_numbers, backward_times, width, bottom=forward_times + waiting_times + spike_times + collecting_times, label='Running Backward', color="#25af13")
-
-    ax.set_xlabel('Run Number')
-    ax.set_ylabel('Time (seconds)')
-    ax.set_title('Time Breakdown for Each Run. Average Total Time: {:.2f} seconds'.format(np.mean(run_times)))
-    ax.legend(loc="upper right")
-    ax.grid(axis='y', alpha=0.3)
-    plt.tight_layout()
-    plt.savefig(f'gw_vaettir_bot/logs/run_times_stacked_{current_time}.png')
-    plt.show()
+    # Plot the run times
+    plot_run_times(run_times, run_times_running_forward, run_times_waiting_for_stacked_enemies,
+                   run_times_spike_phase, run_times_collecting_phase, run_times_running_backward, number_of_runs)
 
 
 if __name__ == "__main__":
     # Add current directory to path for testing
     import os
+    import sys
     current_dir = os.path.dirname(os.path.abspath(__file__))
     if current_dir not in sys.path:
         sys.path.insert(0, current_dir)
-    number_of_runs = 1
+    number_of_runs = 10
     start_farm(number_of_runs)

@@ -165,7 +165,7 @@ def is_blue(img_array):
     # Blue is typically low red and green, high blue
     return is_color(img_array, "blue", r_min=0, r_max=100, g_min=0, g_max=100, b_min=150, b_max=255, pixel_threshold=20)
 
-def is_object(img_array, object_name, threshhold_binary=128, threshhold_difference=2000, print_diff=False, asset_path="gw_vaettir_bot/assets/items"):
+def is_object(img_array, object_name, threshhold_binary=100, threshhold_difference=2000, print_diff=False, asset_path="gw_vaettir_bot/assets/items"):
     """ Compare the cropped area with the image of the object as png. Can be used for npc, items, areas, enemies"""
     return compare_with_reference_image(
         img_array, object_name, asset_path=asset_path,

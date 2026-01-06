@@ -19,7 +19,7 @@ def main():
     
     try:
         # Start the farming process
-        start_farm(1)  # You can adjust the number of runs here
+        start_farm(4)  # You can adjust the number of runs hereww
         print("\nFarming process completed.")
     except KeyboardInterrupt:
         print("\n\nFarm stopped by user.")
