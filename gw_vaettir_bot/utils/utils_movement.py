@@ -99,7 +99,7 @@ def handle_movement_sequence(movement_dict, current_movement_key, current_moveme
     if current_movement_key is None:
         current_movement_key = movement_keys[current_movement_index]
         current_movement_remaining = movement_dict[current_movement_key]
-        print(f"Starting {movement_type} movement: {current_movement_key} for {current_movement_remaining} seconds")
+        #print(f"Starting {movement_type} movement: {current_movement_key} for {current_movement_remaining} seconds")
     
     # Execute movement in chunks
     if current_movement_remaining > 0:
@@ -107,13 +107,13 @@ def handle_movement_sequence(movement_dict, current_movement_key, current_moveme
         
         # If movement is complete, move to next movement
         if current_movement_remaining <= 0:
-            print(f"Completed {movement_type} movement: {current_movement_key}")
+            #print(f"Completed {movement_type} movement: {current_movement_key}")
             current_movement_index += 1
             current_movement_key = None
             
             # Check if all movements are complete
             if current_movement_index >= len(movement_keys):
-                print(f"All {movement_type} movements completed")
+                #print(f"All {movement_type} movements completed")
                 return None, 0.0, current_movement_index, True
     
     return current_movement_key, current_movement_remaining, current_movement_index, False

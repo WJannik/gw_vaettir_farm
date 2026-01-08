@@ -49,12 +49,12 @@ def check_next_item():
     screenshot, img_array = capture_and_process_region(bbox, "item_check")
 
     if is_yellow(img_array):
-        print("Yellow item detected!")
+        #print("Yellow item detected!")
         pick_up_selected_object()
         return True
     for item in items_of_interest:
         if is_object(img_array, item):
-            print(f"{item.replace('_', ' ').title()} detected!")
+            #print(f"{item.replace('_', ' ').title()} detected!")
             pick_up_selected_object()
             return True
     return False

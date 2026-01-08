@@ -14,12 +14,11 @@ from gw_vaettir_bot import start_farm
 def main():
     """Main entry point for the Vaettir farm."""
     print("=== Guild Wars Vaettir Farm ===")
-    print("Starting the farming process...")
-    print("Press Ctrl+C to stop the farm at any time.\n")
+
     
     try:
         # Start the farming process
-        start_farm(4)  # You can adjust the number of runs hereww
+        start_farm(5)  # You can adjust the number of runs here
         print("\nFarming process completed.")
     except KeyboardInterrupt:
         print("\n\nFarm stopped by user.")

@@ -46,7 +46,7 @@ class SpikePhase:
         """Enable pre-spike mode with a delay before actual spiking."""
         self.pre_phase_spike = True
         self.time_for_real_spike_start = time.time() + delay
-        print("No movement for 60 seconds or enemies are stacked, enabling spike mode")
+        #print("No movement for 60 seconds or enemies are stacked, enabling spike mode")
     
     def update_pre_spike_to_spike(self):
         """Update from pre-spike to actual spike phase."""
@@ -72,22 +72,22 @@ class SpikePhase:
         if not utils_enemy.check_next_enemy():
             time.sleep(0.1)
             if not utils_enemy.check_next_enemy():
-                print("Collecting since no enemies detected")
+                #print("Collecting since no enemies detected")
                 run_time_spike = time.time() - last_used_logging_time
                 return "start_collecting", run_time_spike
         
         # Check if mana is above 60% before casting
         energy_img_array = utils_energy_management.get_energy_level()
         if energy_img_array < 60.0:
-            print(f"Mana below 60%, skipping Wastrel's Demise cast with mana at {energy_img_array}%")
+            #print(f"Mana below 60%, skipping Wastrel's Demise cast with mana at {energy_img_array}%")
             return None, last_used_logging_time
         
         # Cast spike if enemy is present
         if utils_enemy.check_next_enemy():
             cast_spike(self.nearest_enemy)
         
-        # Alternate enemy targeting in first 30 seconds, then always nearest
-        if time.time() - last_used_logging_time < 30.0:
+        # Alternate enemy targeting in first 25 seconds, then always nearest to avoid pulling enmies outside of the ball
+        if time.time() - last_used_logging_time < 25.0:
             self.nearest_enemy = not self.nearest_enemy  # Alternate between nearest and next enemy
         else:
             self.nearest_enemy = True  # Always nearest enemy
@@ -98,7 +98,7 @@ class SpikePhase:
     def handle_enemy_detection_during_collecting(self):
         """Handle enemy detection during collecting phase."""
         if utils_enemy.check_next_enemy(use_only_compass=True):
-            print("Enemy detected during collecting, pausing collecting and go back to spike mode")
+            #print("Enemy detected during collecting, pausing collecting and go back to spike mode")
             self.phase_spike = True
             return True
         return False

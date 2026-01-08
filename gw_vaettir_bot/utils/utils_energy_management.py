@@ -26,7 +26,7 @@ def get_energy_level():
     filled_columns = np.sum(blue_column_sums >= (img_array.shape[0]*1.0))
     total_columns = img_array.shape[1]
     energy_percentage = (filled_columns / total_columns) * 100
-    print(f"Energy level: {energy_percentage:.2f}%")
+    #print(f"Energy level: {energy_percentage:.2f}%")
     return energy_percentage
 
 if __name__ == "__main__":

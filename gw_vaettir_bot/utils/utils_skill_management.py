@@ -41,10 +41,10 @@ def cast_skill(key, cast_time, aftercast_delay_required = True, skill_name= None
         # Apply aftercast delay if needed
         time.sleep(AFTERCAST_DELAY)
 
-    if skill_name:
+    """if skill_name:
         print(f"Finished casting {skill_name}")
     else:
-        print(f"Finshed casting skill bound to {key}")
+        print(f"Finished casting skill bound to {key}")"""
 
 
 def cast_shadowform():

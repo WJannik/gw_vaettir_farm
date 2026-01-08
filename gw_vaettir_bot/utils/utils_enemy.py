@@ -38,10 +38,10 @@ def are_enemies_stacked():
         print(f"Error saving debug image {"enemies_stacked"}.png:", e)
     # Check for red or yellow colors indicating are not stacked
     if is_red(img_array, 1) or is_yellow(img_array, 1):
-        print("Stacked enemies detected outside the middle!.")
+        #print("Stacked enemies detected outside the middle!.")
         return False
     else:
-        print("Enemies are stacked in the middle.")
+        #print("Enemies are stacked in the middle.")
         return True
 
 
@@ -76,19 +76,19 @@ def check_next_enemy(use_only_compass=False):
     except Exception as e:
         print(f"Error saving debug image {"enemies_without_edge"}.png:", e)
     if is_red(img_array_compass, 1) or is_yellow(img_array_compass, 1):
-        print("Enemy detected on compass!.")
+        #print("Enemy detected on compass!.")
         if use_only_compass:
             return True
         if (is_object(img_array, "vaettir_no_hp", 180, 6000, False) or 
             is_object(img_array, "vaettir_full_hp", 180, 6000, False) or 
             is_red(img_array)):
-            print("Enemy detected!.")
+            #print("Enemy detected!.")
             return True
         else:
-            print("No enemy detected.")
+            #print("No enemy detected.")
             return False
     else:
-        print("No enemy detected.")
+        #print("No enemy detected.")
         return False
 
 if __name__ == "__main__":

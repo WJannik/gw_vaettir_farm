@@ -62,7 +62,6 @@ def start_farm(number_of_runs):
         last_used_logging_time = time.time()
         print(f"Starting the {run_number+1}-th run in ...")
         for countdown in range(3, 0, -1):
-            print(countdown)
             time.sleep(1)
         # Start run in bjora marches to jaga moraine area
         utils_areas.bjora_marches2jaga_moraine()  
@@ -170,7 +169,7 @@ def start_farm(number_of_runs):
                 
             # Fail safe to start collecting after 300 seconds
             if time_passed_in_seconds > 300 and not collecting_phase.is_collecting():
-                print(f"Starting collecting after 300 seconds at {time_passed_in_seconds} seconds")
+                #print(f"Starting collecting after 300 seconds at {time_passed_in_seconds} seconds")
                 collecting_phase.start_collecting()
                 spike_phase.disable_spike_mode()
 

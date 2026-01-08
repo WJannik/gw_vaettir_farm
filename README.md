@@ -2,8 +2,11 @@
 
 A Python automation script for farming Vaettir in Guild Wars.
 
-## Quick Start
+## Demonstration
 
+[Demonstration of an example run on Youtube](https://www.youtube.com/watch?v=MHa8c_5hUI8)
+
+## Quick Start
 To start the farm, simply run:
 
 ```bash

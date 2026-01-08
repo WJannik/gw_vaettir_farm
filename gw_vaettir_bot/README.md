@@ -2,7 +2,7 @@
 
 Curial:
 add assertions
+pick up gold
 
 Nice to have:
 compass for orientation
-when are runs consider to be failed? spike phase almost 0 or way to high
