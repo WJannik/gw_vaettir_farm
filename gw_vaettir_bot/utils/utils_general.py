@@ -241,7 +241,7 @@ def drag_to_position(start_x, start_y, end_x, end_y, duration=1.0):
 
 if __name__== "__main__":
     # Example usage
-    bbox = generate_bbox(860, 55, 180, 15)
+    bbox = generate_bbox(860, 25, 180, 15)
     screenshot, img_array = capture_and_process_region(bbox, "test_region")
     # Compare the imge with the assest image at assets/npc/jarnskeggi.png
     if is_object(img_array, "jarnskeggi", print_diff=True, asset_path="gw_vaettir_bot/assets/npcs"):

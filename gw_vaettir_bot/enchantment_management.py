@@ -1,7 +1,5 @@
 """Enchantment management for Vaettir farming bot."""
 
-import time
-
 # Try relative imports first, then absolute imports for testing
 try:
     from .utils.utils_skill_management import *

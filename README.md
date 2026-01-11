@@ -18,4 +18,4 @@ python run_farm.py
 
 ## Usage
 
-Press `Ctrl+C` to stop the farm at any time.
+Press `Ctrl+C` in consol to stop the farm at any time.

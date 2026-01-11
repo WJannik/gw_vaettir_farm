@@ -4,6 +4,7 @@ import threading
 from PIL import ImageGrab
 import numpy as np
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 
 # Try relative imports first, then absolute imports for testing
 try:
@@ -55,12 +56,12 @@ def start_farm(number_of_runs):
         'enemies_stacked': []
     }
     
-    for run_number in range(number_of_runs):
+    for run_number in tqdm(range(number_of_runs), desc="Runs"):
         start_time_run = time.time()
         # Compact run time tracking
         times = {'forward': 0, 'backward': 0, 'spike': 0, 'collecting': 0, 'enemies_stacked': 0}
         last_used_logging_time = time.time()
-        print(f"Starting the {run_number+1}-th run in ...")
+        #print(f"Starting the {run_number+1}-th run in ...")
         for countdown in range(3, 0, -1):
             time.sleep(1)
         # Start run in bjora marches to jaga moraine area
@@ -167,9 +168,9 @@ def start_farm(number_of_runs):
                 elif result == "sequence_complete":
                     break
                 
-            # Fail safe to start collecting after 300 seconds
-            if time_passed_in_seconds > 300 and not collecting_phase.is_collecting():
-                #print(f"Starting collecting after 300 seconds at {time_passed_in_seconds} seconds")
+            # Fail safe to start collecting after 400 seconds
+            if time_passed_in_seconds > 400 and not collecting_phase.is_collecting():
+                #print(f"Starting collecting after 400 seconds at {time_passed_in_seconds} seconds")
                 collecting_phase.start_collecting()
                 spike_phase.disable_spike_mode()
 
@@ -191,7 +192,6 @@ def start_farm(number_of_runs):
 
     # Plot the run times using compact data
     plot_run_times(run_data)
-5
 
 if __name__ == "__main__":
     # Add current directory to path for testing

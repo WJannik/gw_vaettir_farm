@@ -10,7 +10,7 @@ keyboard = Controller()
 
 def get_energy_bar_snapshot():
     """ Capture a screenshot of the energy bar area at the bottom middle of the screen """
-    bbox = (970, 960, 1175, 966)
+    bbox = (970, 1009, 1175, 1015) # Define the bounding box for the energy bar
     screenshot = ImageGrab.grab(bbox=bbox)
     img_array = np.array(screenshot)
     return img_array
@@ -37,12 +37,12 @@ if __name__ == "__main__":
     if current_dir not in sys.path:
         sys.path.insert(0, current_dir)
     
-    for i in range(50):
+    for i in range(10):
         img_array = get_energy_bar_snapshot()
         img = Image.fromarray(img_array)
         energy_level = get_energy_level()
         # Save image
-        img.save("energy_bar_snapshot.png")
+        img.save("gw_vaettir_bot/debug_images/energy_bar_snapshot.png")
         #img.show()
         # Wait one second before next capture
         time.sleep(1)

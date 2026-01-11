@@ -111,7 +111,7 @@ class MovementPhase:
             time.sleep(0.01)
             self.keyboard.release('v')
             time.sleep(0.01)
-            bbox = generate_bbox(860, 55, 180, 15)
+            bbox = generate_bbox(860, 25, 180, 15)
             screenshot, img_array = capture_and_process_region(bbox, "npc_check")
             if is_object(img_array, "jarnskeggi", print_diff=False, asset_path="gw_vaettir_bot/assets/npcs"):
                 return "found_npc"  # Signal to break main loop
@@ -133,7 +133,7 @@ class MovementPhase:
     def perform_turn_around(self):
         """Perform U-turn after collecting."""
         if not self.turn_around_done:
-            print("Collecting finished, performing U-turn after collecting")
+            #print("Collecting finished, performing U-turn after collecting")
             self.keyboard.press('x')
             time.sleep(0.01)
             self.keyboard.release('x')

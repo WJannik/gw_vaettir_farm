@@ -23,17 +23,11 @@ keyboard = Controller()
 items_of_interest = [
     "glacial_stone",
     "mesmer_tome",
-    "eggnog",
-    "fruitcake",
-    "snowman_summoner",
     "lockpick",
-    "candy_cane_shard",
-    "mischievous_tonic",
-    "frosty_tonic",
-    "map_top_left",
-    "map_top_right",
-    "map_bottom_left",
-    "map_bottom_right",
+    "top_left_map_piece",
+    "top_right_map_piece",
+    "bottom_left_map_piece",
+    "bottom_right_map_piece",
 ]
 
 def check_next_item():
@@ -42,19 +36,19 @@ def check_next_item():
     keyboard.press('ä')
     time.sleep(0.01)
     keyboard.release('ä')
-    time.sleep(0.01)  # Wait a moment for the UI to update
+    time.sleep(0.1)  # Wait a moment for the UI to update
     
     # Generate bounding box and capture the region
-    bbox = generate_bbox(860, 55, 180, 15)  # x=860, y=55, width=180, height=15
+    bbox = generate_bbox(860, 25, 180, 15)  # x=860, y=25, width=180, height=15
     screenshot, img_array = capture_and_process_region(bbox, "item_check")
 
-    if is_yellow(img_array):
-        #print("Yellow item detected!")
+    if is_yellow(img_array,20):
+        print("Yellow item detected!")
         pick_up_selected_object()
         return True
     for item in items_of_interest:
         if is_object(img_array, item):
-            #print(f"{item.replace('_', ' ').title()} detected!")
+            print(f"{item.replace('_', ' ').title()} detected!")
             pick_up_selected_object()
             return True
     return False
@@ -66,7 +60,7 @@ if __name__ == "__main__":
     if current_dir not in sys.path:
         sys.path.insert(0, current_dir)
     
-    time.sleep(2)  # Give some time before checking
+    time.sleep(3)  # Give some time before checking
     for _ in range(1):  # Check 1 cycle
         check_next_item()
         time.sleep(0.5)  # Wait a bit before checking the next item

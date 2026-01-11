@@ -23,7 +23,7 @@ keyboard = Controller()
 def are_enemies_stacked():
     """Check if there are stacked enemies."""
     # Generate bounding box and capture the main region
-    bbox_compass = generate_center_bbox(1798, 153, 22)
+    bbox_compass = generate_center_bbox(1798, 123, 22)
     screenshot, img_array = capture_and_process_region(bbox_compass, "enemy_stack_check")
     # Remove the middel of the bounding box by setting is to black
     height, width, _ = np.shape(img_array)
@@ -57,11 +57,11 @@ def check_next_enemy(use_only_compass=False):
         time.sleep(0.01)  # Wait a moment for the UI to update
         
         # Generate bounding box and capture the main region
-        bbox = generate_bbox(860, 55, 180, 15)
+        bbox = generate_bbox(860, 25, 180, 15)
         screenshot, img_array = capture_and_process_region(bbox, "enemy_check")
     
     # Generate compass bounding box and capture compass region
-    bbox_compass = generate_center_bbox(1798, 153, 20)
+    bbox_compass = generate_center_bbox(1798, 123, 20)
     screenshot_compass, img_array_compass = capture_and_process_region(bbox_compass, "enemy_check_compass")
     # img_array_compass is a 40x40x3 numpy array. I only want to look at the circle with radius 20
     center_y, center_x = 20, 20
