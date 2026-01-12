@@ -14,7 +14,9 @@ python run_farm.py
 ```
 
 ## Requirements
-
+```bash
+pip install -r requirements.txt
+```
 
 ## Usage
 
