@@ -5,56 +5,56 @@ from pynput.keyboard import Key, Controller
 keyboard = Controller()
 
 
-def move_forward(duration):
+def move_forward(duration: float) -> None:
     """Move forward for specified duration"""
     #print(f"Moving forward for {duration} seconds")
     keyboard.press('w')
     time.sleep(duration)
     keyboard.release('w')
 
-def move_backward(duration):
+def move_backward(duration: float) -> None:
     """Move backward for specified duration"""
     #print(f"Moving backward for {duration} seconds")
     keyboard.press('s')
     time.sleep(duration)
     keyboard.release('s')
 
-def move_stop(duration):
+def move_stop(duration: float) -> None:
     """Stop movement for specified duration"""
     #print(f"Stopping movement for {duration} seconds")
     keyboard.release('w')
     keyboard.release('s')
     time.sleep(duration)
 
-def move_sideways_left(duration):
+def move_sideways_left(duration: float) -> None:
     """Move sideways left for specified duration"""
     #print(f"Moving sideways left for {duration} seconds")
     keyboard.press('q')
     time.sleep(duration)
     keyboard.release('q')
 
-def move_sideways_right(duration):
+def move_sideways_right(duration: float) -> None:
     """Move sideways right for specified duration"""
     #print(f"Moving sideways right for {duration} seconds")
     keyboard.press('e')
     time.sleep(duration)
     keyboard.release('e')
 
-def turn_left(duration):
+def turn_left(duration: float) -> None:
     """Turn left for specified duration"""
     #print(f"Turning left for {duration} seconds")
     keyboard.press('a')
     time.sleep(duration)
     keyboard.release('a')
 
-def turn_right(duration):
+def turn_right(duration: float) -> None:
     """Turn right for specified duration"""
     #print(f"Turning right for {duration} seconds")
     keyboard.press('d')
     time.sleep(duration)
     keyboard.release('d')
 
-def execute_chunk_of_movement(current_movement_key, current_movement_remaining,movement_chunk_size):
+def execute_chunk_of_movement(current_movement_key: str, current_movement_remaining: float, movement_chunk_size: float) -> float:
     # Determine chunk duration (smaller of remaining time or chunk size)
     chunk_duration = min(current_movement_remaining, movement_chunk_size)
     # Execute the appropriate movement
@@ -74,8 +74,8 @@ def execute_chunk_of_movement(current_movement_key, current_movement_remaining,m
         move_stop(chunk_duration)
     return current_movement_remaining - chunk_duration
 
-def handle_movement_sequence(movement_dict, current_movement_key, current_movement_remaining, 
-                           current_movement_index, movement_chunk_size, movement_type="forward"):
+def handle_movement_sequence(movement_dict: dict, current_movement_key: str, current_movement_remaining: float, 
+                           current_movement_index: int, movement_chunk_size: float) -> tuple:
     """
     Handle a sequence of movements from a movement dictionary.
     
@@ -85,7 +85,6 @@ def handle_movement_sequence(movement_dict, current_movement_key, current_moveme
         current_movement_remaining: Remaining time for current movement
         current_movement_index: Index of current movement in sequence
         movement_chunk_size: Size of movement chunks in seconds
-        movement_type: Type of movement for logging ("forward" or "reverse")
     
     Returns:
         tuple: (new_movement_key, new_remaining_time, new_index, sequence_complete)
@@ -100,7 +99,6 @@ def handle_movement_sequence(movement_dict, current_movement_key, current_moveme
     if current_movement_key is None:
         current_movement_key = movement_keys[current_movement_index]
         current_movement_remaining = movement_dict[current_movement_key]
-        #print(f"Starting {movement_type} movement: {current_movement_key} for {current_movement_remaining} seconds")
     
     # Execute movement in chunks
     if current_movement_remaining > 0:
@@ -108,13 +106,11 @@ def handle_movement_sequence(movement_dict, current_movement_key, current_moveme
         
         # If movement is complete, move to next movement
         if current_movement_remaining <= 0:
-            #print(f"Completed {movement_type} movement: {current_movement_key}")
             current_movement_index += 1
             current_movement_key = None
             
             # Check if all movements are complete
             if current_movement_index >= len(movement_keys):
-                #print(f"All {movement_type} movements completed")
                 return None, 0.0, current_movement_index, True
     
     return current_movement_key, current_movement_remaining, current_movement_index, False

@@ -2,7 +2,7 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 
-def plot_run_times(run_data):
+def plot_run_times(run_data: dict) -> None:
     """Plot the run times as a stacked bar chart."""
     # Extract data from run_data dictionary
     run_times = run_data['total']

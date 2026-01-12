@@ -11,7 +11,7 @@ except ImportError:
 # Create a keyboard controller
 keyboard = Controller()
 
-def cast_skill(key, cast_time, aftercast_delay_required = True, skill_name= None):
+def cast_skill(key: str, cast_time: float, aftercast_delay_required: bool = True, skill_name: str = None) -> None:
     """
     Generic skill cast function with aftercast delay.
     
@@ -33,27 +33,21 @@ def cast_skill(key, cast_time, aftercast_delay_required = True, skill_name= None
         # Apply aftercast delay if needed
         time.sleep(AFTERCAST_DELAY)
 
-    """if skill_name:
-        print(f"Finished casting {skill_name}")
-    else:
-        print(f"Finished casting skill bound to {key}")"""
-
-
-def cast_shadowform():
+def cast_shadowform() -> None:
     cast_skill('1', cast_time=0.0, aftercast_delay_required = False, skill_name="Deadly Paradox")
     cast_skill('2', cast_time=1.0, aftercast_delay_required=True, skill_name="Shadowform")
 
-def cast_shroud_of_distress():
+def cast_shroud_of_distress() -> None:
     cast_skill('3', cast_time=1.0, aftercast_delay_required = True, skill_name="Shroud of Distress")
 
-def cast_way_of_perfection_and_master():
+def cast_way_of_perfection_and_master() -> None:
     cast_skill('4', cast_time=0.25, aftercast_delay_required = True, skill_name="Way of Perfection")
     cast_skill('5', cast_time=0.25, aftercast_delay_required = True, skill_name="Way of Mastery")
 
-def cast_mantra_of_earth():
-    cast_skill('8', cast_time=0.0, aftercast_delay_required = False, skill_name="Mantra of Earth")#
+def cast_mantra_of_earth() -> None:
+    cast_skill('8', cast_time=0.0, aftercast_delay_required = False, skill_name="Mantra of Earth")
 
-def cast_spike(nearest_enemy=True):
+def cast_spike(nearest_enemy: bool = True) -> None:
     if nearest_enemy:
         # Get nearest enemy
         keyboard.press('c')

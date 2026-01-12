@@ -24,7 +24,7 @@ items_of_interest = [
     "bottom_right_map_piece",
 ]
 
-def check_next_item():
+def check_next_item() -> bool:
     """Check if the next item is of interest and pick it up if so."""
     # Simulate pressing key 'ä' to check the next item
     keyboard.press('ä')
@@ -34,7 +34,7 @@ def check_next_item():
     
     # Generate bounding box and capture the region
     bbox = generate_bbox(860, 25, 180, 15)  # x=860, y=25, width=180, height=15
-    screenshot, img_array = capture_and_process_region(bbox, "item_check")
+    _, img_array = capture_and_process_region(bbox, "item_check")
 
     if is_yellow(img_array,20):
         print("Yellow item detected!")

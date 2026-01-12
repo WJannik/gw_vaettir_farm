@@ -6,14 +6,14 @@ from pynput.keyboard import Controller
 # Create a keyboard controller
 keyboard = Controller()
 
-def get_energy_bar_snapshot():
+def get_energy_bar_snapshot() -> np.ndarray:
     """ Capture a screenshot of the energy bar area at the bottom middle of the screen """
     bbox = (970, 1009, 1175, 1015) # Define the bounding box for the energy bar
     screenshot = ImageGrab.grab(bbox=bbox)
     img_array = np.array(screenshot)
     return img_array
 
-def get_energy_level():
+def get_energy_level() -> float:
     """ Analyze the energy bar image to determine the current energy level """
     img_array = get_energy_bar_snapshot()
     # The energy bar is typically blue, so we can analyze the blue channel
@@ -24,7 +24,6 @@ def get_energy_level():
     filled_columns = np.sum(blue_column_sums >= (img_array.shape[0]*1.0))
     total_columns = img_array.shape[1]
     energy_percentage = (filled_columns / total_columns) * 100
-    #print(f"Energy level: {energy_percentage:.2f}%")
     return energy_percentage
 
 if __name__ == "__main__":

@@ -11,7 +11,7 @@ keyboard = Controller()
 # Create a mouse controller
 mouse_controller = mouse.Controller()
 
-def generate_bbox(x, y, width, height):
+def generate_bbox(x: int, y: int, width: int, height: int) -> tuple:
     """
     Generate a bounding box tuple from position and dimensions.
     
@@ -26,7 +26,7 @@ def generate_bbox(x, y, width, height):
     """
     return (x, y, x + width, y + height)
 
-def generate_center_bbox(center_x, center_y, radius):
+def generate_center_bbox(center_x: int, center_y: int, radius: int) -> tuple:
     """
     Generate a bounding box centered around a point with given radius.
     
@@ -40,7 +40,7 @@ def generate_center_bbox(center_x, center_y, radius):
     """
     return (center_x - radius, center_y - radius, center_x + radius, center_y + radius)
 
-def capture_and_process_region(bbox, debug_filename=None, save_debug=True):
+def capture_and_process_region(bbox: tuple, debug_filename: str = None, save_debug: bool = True) -> tuple:
     """
     Capture a screenshot of a specific region and convert to numpy array.
     
@@ -65,9 +65,9 @@ def capture_and_process_region(bbox, debug_filename=None, save_debug=True):
     img_array = np.array(screenshot)
     return screenshot, img_array
 
-def compare_with_reference_image(img_array, reference_name, asset_path="gw_vaettir_bot/assets/items", 
-                                threshold_binary=128, threshold_difference=2000, 
-                                print_diff=False, save_debug=True):
+def compare_with_reference_image(img_array: np.ndarray, reference_name: str, asset_path: str = "gw_vaettir_bot/assets/items", 
+                                threshold_binary: int = 128, threshold_difference: int = 2000, 
+                                print_diff: bool = False, save_debug: bool = True) -> bool:
     """
     Compare an image array with a reference image from assets.
     
@@ -123,7 +123,8 @@ def compare_with_reference_image(img_array, reference_name, asset_path="gw_vaett
         print(f"Error comparing with reference image {reference_name}:", e)
         return False
 
-def is_color(img_array, color_name, r_min=0, r_max=255, g_min=0, g_max=255, b_min=0, b_max=255, pixel_threshold=20):
+def is_color(img_array: np.ndarray, color_name: str, r_min: int = 0, r_max: int = 255, 
+             g_min: int = 0, g_max: int = 255, b_min: int = 0, b_max: int = 255, pixel_threshold: int = 20) -> bool:
     """
     Generic function to check for a specific color by analyzing pixel colors.
     
@@ -149,23 +150,25 @@ def is_color(img_array, color_name, r_min=0, r_max=255, g_min=0, g_max=255, b_mi
     #print(f"{color_name.capitalize()} pixels found: {pixel_count}")
     return pixel_count > pixel_threshold
 
-def is_red(img_array, pixel_threshold=25):
+def is_red(img_array: np.ndarray, pixel_threshold: int = 25) -> bool:
     # Red is typically high red, low green and blue
     return is_color(img_array, "red", r_min=128, r_max=255, g_min=0, g_max=100, b_min=0, b_max=100, pixel_threshold=pixel_threshold)
 
-def is_yellow(img_array, pixel_threshold=10):
+def is_yellow(img_array: np.ndarray, pixel_threshold: int = 10) -> bool:
     # Yellow is typically high red and green, low blue
     return is_color(img_array, "yellow", r_min=200, r_max=255, g_min=200, g_max=255, b_min=0, b_max=100, pixel_threshold=pixel_threshold)
 
-def is_purple(img_array):
+def is_purple(img_array: np.ndarray, pixel_threshold: int = 20) -> bool:
     # Purple is typically high red and blue, low green
-    return is_color(img_array, "purple", r_min=150, r_max=255, g_min=0, g_max=100, b_min=150, b_max=255, pixel_threshold=20)
+    return is_color(img_array, "purple", r_min=150, r_max=255, g_min=0, g_max=100, b_min=150, b_max=255, pixel_threshold=pixel_threshold)
 
-def is_blue(img_array):
+def is_blue(img_array: np.ndarray, pixel_threshold: int = 20) -> bool:
     # Blue is typically low red and green, high blue
-    return is_color(img_array, "blue", r_min=0, r_max=100, g_min=0, g_max=100, b_min=150, b_max=255, pixel_threshold=20)
+    return is_color(img_array, "blue", r_min=0, r_max=100, g_min=0, g_max=100, b_min=150, b_max=255, pixel_threshold=pixel_threshold)
 
-def is_object(img_array, object_name, threshhold_binary=100, threshhold_difference=2000, print_diff=False, asset_path="gw_vaettir_bot/assets/items"):
+def is_object(img_array: np.ndarray, object_name: str, threshhold_binary: int = 100, 
+              threshhold_difference: int = 2000, print_diff: bool = False, 
+              asset_path: str = "gw_vaettir_bot/assets/items") -> bool:
     """ Compare the cropped area with the image of the object as png. Can be used for npc, items, areas, enemies"""
     return compare_with_reference_image(
         img_array, object_name, asset_path=asset_path,
@@ -174,15 +177,14 @@ def is_object(img_array, object_name, threshhold_binary=100, threshhold_differen
         print_diff=print_diff
     )
 
-def pick_up_selected_object(waiting_item_seconds=1.0):
+def pick_up_selected_object(waiting_item_seconds: float = 1.0) -> None:
     """Pick up the currently selected item."""
-    #print("Picking up item")
     keyboard.press(Key.space)
     time.sleep(0.01)
     keyboard.release(Key.space)
     time.sleep(waiting_item_seconds)  # Wait after picking up the item
 
-def click_at_position(x, y, button=Button.left, clicks=1, delay=0.1):
+def click_at_position(x: int, y: int, button=Button.left, clicks: int = 1, delay: float = 0.1) -> None:
     """
     Click at a specific position on the screen
     
@@ -203,15 +205,15 @@ def click_at_position(x, y, button=Button.left, clicks=1, delay=0.1):
         if clicks > 1 and _ < clicks - 1:  # Add delay between multiple clicks
             time.sleep(delay)
 
-def right_click_at_position(x, y):
+def right_click_at_position(x: int, y: int) -> None:
     """Right click at specific position"""
     click_at_position(x, y, button=Button.right)
 
-def double_click_at_position(x, y):
+def double_click_at_position(x: int, y: int) -> None:
     """Double click at specific position"""
     click_at_position(x, y, clicks=2, delay=0.1)
 
-def drag_to_position(start_x, start_y, end_x, end_y, duration=1.0):
+def drag_to_position(start_x: int, start_y: int, end_x: int, end_y: int, duration: float = 1.0) -> None:
     """
     Drag from start position to end position
     
