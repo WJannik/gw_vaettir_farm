@@ -1,5 +1,6 @@
 import time
 from pynput.keyboard import Key, Controller
+
 # Create a keyboard controller
 keyboard = Controller()
 

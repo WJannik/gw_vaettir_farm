@@ -9,19 +9,10 @@ try:
     from .utils.utils_skill_management import cast_spike
     from .utils.constants import SPIKE_COOLDOWN
 except ImportError:
-    try:
-        from utils import utils_enemy
-        from utils import utils_energy_management
-        from utils.utils_skill_management import cast_spike
-        from utils.constants import SPIKE_COOLDOWN
-    except ImportError:
-        import os
-        import sys
-        sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        from gw_vaettir_bot.utils import utils_enemy
-        from gw_vaettir_bot.utils import utils_energy_management
-        from gw_vaettir_bot.utils.utils_skill_management import cast_spike
-        from gw_vaettir_bot.utils.constants import SPIKE_COOLDOWN
+    from utils import utils_enemy
+    from utils import utils_energy_management
+    from utils.utils_skill_management import cast_spike
+    from utils.constants import SPIKE_COOLDOWN
 
 
 class SpikePhase:

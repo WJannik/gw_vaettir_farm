@@ -18,28 +18,16 @@ try:
     from .enchantment_management import EnchantmentManager
 except ImportError:
     # If relative imports fail, try absolute imports for testing
-    try:
-        from utils import utils_areas
-        from utils import utils_enemy
-        from utils.constants import MAX_RUN_TIME
-        from utils.utils_plotting import plot_run_times
-        from phase_movement import MovementPhase
-        from phase_spike import SpikePhase
-        from phase_collecting import CollectingPhase
-        from enchantment_management import EnchantmentManager
-    except ImportError:
-        # If that fails too, try adding the parent directory to path
-        import os
-        import sys
-        sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        from gw_vaettir_bot.utils import utils_areas
-        from gw_vaettir_bot.utils import utils_enemy
-        from gw_vaettir_bot.utils.constants import MAX_RUN_TIME
-        from gw_vaettir_bot.utils.utils_plotting import plot_run_times
-        from gw_vaettir_bot.phase_movement import MovementPhase
-        from gw_vaettir_bot.phase_spike import SpikePhase
-        from gw_vaettir_bot.phase_collecting import CollectingPhase
-        from gw_vaettir_bot.enchantment_management import EnchantmentManager
+    from utils import utils_areas
+    from utils import utils_enemy
+    from utils.constants import MAX_RUN_TIME
+    from utils.utils_plotting import plot_run_times
+    from phase_movement import MovementPhase
+    from phase_spike import SpikePhase
+    from phase_collecting import CollectingPhase
+    from enchantment_management import EnchantmentManager
+
+
 
 def start_farm(number_of_runs):
     """Main function to start the Vaettir farming process."""

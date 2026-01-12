@@ -8,14 +8,8 @@ try:
     from .utils_general import generate_bbox, generate_center_bbox, capture_and_process_region, is_red, is_yellow, is_object
 except ImportError:
     # If relative imports fail, try absolute imports for testing
-    try:
-        from utils_general import generate_bbox, generate_center_bbox, capture_and_process_region, is_red, is_yellow, is_object
-    except ImportError:
-        # If that fails too, try adding the parent directory to path
-        import os
-        import sys
-        sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        from gw_vaettir_bot.utils.utils_general import generate_bbox, generate_center_bbox, capture_and_process_region, is_red, is_yellow, is_object
+    from utils_general import generate_bbox, generate_center_bbox, capture_and_process_region, is_red, is_yellow, is_object
+
         
 # Create a keyboard controller
 keyboard = Controller()

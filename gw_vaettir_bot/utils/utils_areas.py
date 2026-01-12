@@ -10,14 +10,8 @@ try:
     from .utils_general import pick_up_selected_object, click_at_position, generate_bbox, capture_and_process_region, is_object
 except ImportError:
     # If relative imports fail, try absolute imports for testing
-    try:
-        from utils_general import pick_up_selected_object, click_at_position, generate_bbox, capture_and_process_region, is_object
-    except ImportError:
-        # If that fails too, try adding the parent directory to path
-        import os
-        import sys
-        sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        from gw_vaettir_bot.utils.utils_general import pick_up_selected_object, click_at_position, generate_bbox, capture_and_process_region, is_object
+    from utils_general import pick_up_selected_object, click_at_position, generate_bbox, capture_and_process_region, is_object
+
 # Create a keyboard controller
 keyboard = Controller()
 # Create a mouse controller

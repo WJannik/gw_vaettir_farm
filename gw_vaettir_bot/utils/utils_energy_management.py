@@ -1,12 +1,10 @@
 import time
 from PIL import ImageGrab, Image
 import numpy as np
-from pynput.keyboard import Key, Listener, Controller
+from pynput.keyboard import Controller
+
 # Create a keyboard controller
 keyboard = Controller()
-
-
-
 
 def get_energy_bar_snapshot():
     """ Capture a screenshot of the energy bar area at the bottom middle of the screen """
