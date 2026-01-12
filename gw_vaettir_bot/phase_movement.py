@@ -1,5 +1,3 @@
-"""Movement phase handling for Vaettir farming bot."""
-
 import time
 from pynput.keyboard import Controller
 
@@ -18,7 +16,7 @@ except ImportError:
 class MovementPhase:
     """Handles the movement phase of the Vaettir farming bot."""
     
-    def __init__(self):
+    def __init__(self) -> None:
         self.keyboard = Controller()
         
         # Movement configuration
@@ -46,7 +44,7 @@ class MovementPhase:
         self.stuck_used = False
         self.turn_around_done = False
     
-    def reset_movement_state(self):
+    def reset_movement_state(self) -> None:
         """Reset movement state for new run."""
         self.final_position_reached_forward = False
         self.current_movement_key_forward = None
@@ -59,14 +57,14 @@ class MovementPhase:
         self.stuck_used = False
         self.turn_around_done = False
     
-    def handle_forward_movement(self, shadowform_casted, shroud_casted, ways_casted):
+    def handle_forward_movement(self, shadowform_casted: bool, shroud_casted: bool, ways_casted: bool) -> bool:
         """Handle forward movement sequence."""
         if (self.current_movement_index_forward < len(self.movement_keys_forward) and
             shadowform_casted and shroud_casted and ways_casted):
             
             self.current_movement_key_forward, self.current_movement_remaining_forward, self.current_movement_index_forward, sequence_complete = handle_movement_sequence(
                 self.dict_movement_forwards, self.current_movement_key_forward, self.current_movement_remaining_forward, 
-                self.current_movement_index_forward, MOVEMENT_CHUNK_SIZE, "forward"
+                self.current_movement_index_forward, MOVEMENT_CHUNK_SIZE,
             )
             
             # Check if all movements are complete
@@ -77,7 +75,7 @@ class MovementPhase:
         
         return False  # Movement phase ongoing
     
-    def handle_stuck_detection(self):
+    def handle_stuck_detection(self) -> bool:
         """Handle stuck detection and recovery."""
         if self.final_position_reached_forward and not self.stuck_used:
             if time.time() - self.last_movement_time > 30:
@@ -86,14 +84,14 @@ class MovementPhase:
                 return True
         return False
     
-    def should_enable_spike_mode(self, are_enemies_stacked_func):
+    def should_enable_spike_mode(self, are_enemies_stacked_func) -> bool:
         """Check if spike mode should be enabled."""
         if self.final_position_reached_forward:
             return (time.time() - self.last_movement_time > 40 or 
                     are_enemies_stacked_func())
         return False
     
-    def handle_backward_movement(self):
+    def handle_backward_movement(self) -> str:
         """Handle backward movement sequence."""
         if (self.final_position_reached_forward and 
             self.current_movement_index_backward < len(self.movement_keys_backward) and
@@ -105,13 +103,13 @@ class MovementPhase:
             self.keyboard.release('v')
             time.sleep(0.01)
             bbox = generate_bbox(860, 25, 180, 15)
-            screenshot, img_array = capture_and_process_region(bbox, "npc_check")
+            _, img_array = capture_and_process_region(bbox, "npc_check")
             if is_object(img_array, "jarnskeggi", print_diff=False, asset_path="gw_vaettir_bot/assets/npcs"):
                 return "found_npc"  # Signal to break main loop
             
             self.current_movement_key_backward, self.current_movement_remaining_backward, self.current_movement_index_backward, sequence_complete = handle_movement_sequence(
                 self.dict_movement_backward, self.current_movement_key_backward, self.current_movement_remaining_backward, 
-                self.current_movement_index_backward, MOVEMENT_CHUNK_SIZE, "backward"
+                self.current_movement_index_backward, MOVEMENT_CHUNK_SIZE,
             )
             
             # Check if all movements are complete
@@ -123,7 +121,7 @@ class MovementPhase:
         
         return "ongoing"  # Movement ongoing
     
-    def perform_turn_around(self):
+    def perform_turn_around(self) -> None:
         """Perform U-turn after collecting."""
         if not self.turn_around_done:
             #print("Collecting finished, performing U-turn after collecting")

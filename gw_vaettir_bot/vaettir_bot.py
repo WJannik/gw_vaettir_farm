@@ -17,7 +17,6 @@ try:
     from .phase_collecting import CollectingPhase
     from .enchantment_management import EnchantmentManager
 except ImportError:
-    # If relative imports fail, try absolute imports for testing
     from utils import utils_areas
     from utils import utils_enemy
     from utils.constants import MAX_RUN_TIME
@@ -29,10 +28,8 @@ except ImportError:
 
 
 
-def start_farm(number_of_runs):
+def start_farm(number_of_runs: int) -> None:
     """Main function to start the Vaettir farming process."""
-    # Create a keyboard controller
-    keyboard = Controller()
 
     # Compact run times tracking
     run_data = {
@@ -158,7 +155,6 @@ def start_farm(number_of_runs):
                 
             # Fail safe to start collecting after 400 seconds
             if time_passed_in_seconds > 400 and not collecting_phase.is_collecting():
-                #print(f"Starting collecting after 400 seconds at {time_passed_in_seconds} seconds")
                 collecting_phase.start_collecting()
                 spike_phase.disable_spike_mode()
 
@@ -178,7 +174,7 @@ def start_farm(number_of_runs):
 
         print(f"Run {run_number+1} completed in {total_time:.2f} seconds.")
 
-    # Plot the run times using compact data
+    # Plot the run times by phase for each run
     plot_run_times(run_data)
 
 if __name__ == "__main__":
@@ -188,5 +184,5 @@ if __name__ == "__main__":
     current_dir = os.path.dirname(os.path.abspath(__file__))
     if current_dir not in sys.path:
         sys.path.insert(0, current_dir)
-    number_of_runs = 20
+    number_of_runs = 5  # Set desired number of runs for testing
     start_farm(number_of_runs)
