@@ -49,6 +49,9 @@ A [video demonstration](https://www.youtube.com/watch?v=MHa8c_5hUI8) is availabl
 - The script is built to handle most variations, but certain edge cases may still lead to suboptimal behavior.
 - When a failure is detected, the script automatically resets the run and starts a fresh attempt.
 
+An overview of the performance can be seen in the plot below. Each bar represents a single run, and the colors indicate the time spent in each phase of the routine:
+![Performance Overview](images/run_times_stacked_20260114-170822.png)
+Across the 20 recorded runs, the average duration is 191 seconds per run. Most of the time is spent in combat (red and orange), while movement phases (blue and green) remain relatively stable. Loot collection (purple) is fast overall but shows slight variation depending on the number of dropped items.
 ## Quick Start
 Install the required packages from requirements.txt.
 ```bash
@@ -67,7 +70,7 @@ python run_farm.py 15
 The automation is designed for a specific setup as Mesmer/Assasin or Assasin/Mesmer: <br>
 Build: OQdTI4x8ZiHRn5AiAaR0G8myAAA <br>
 Weapon: Staff with +20% enchantment duration (to maintain Shadow Form) <br>
-Armor: Max armor with +10 armor while enchanted; other runes and insignias are flexible <br> 
+Armor: Max armor with +10 armor while enchanted; other runes and insignias are flexible. <br> 
 
 ## Issues & Limitations
 The script is designed for 1920×1080 resolution
