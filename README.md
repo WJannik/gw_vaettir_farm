@@ -42,6 +42,13 @@ The automation routine performs the following steps:
 
 A [video demonstration](https://www.youtube.com/watch?v=MHa8c_5hUI8) is available on YouTube.
 
+## Performance & Reliability
+
+- Each run takes roughly 3–4 minutes on average.
+- The automation has an approximate 5% failure rate, mainly due to the dynamic layout of the area, which changes every time you enter it.
+- The script is built to handle most variations, but certain edge cases may still lead to suboptimal behavior.
+- When a failure is detected, the script automatically resets the run and starts a fresh attempt.
+
 ## Quick Start
 Install the required packages from requirements.txt.
 ```bash
@@ -60,17 +67,16 @@ python run_farm.py 15
 The automation is designed for a specific setup as Mesmer/Assasin or Assasin/Mesmer: <br>
 Build: OQdTI4x8ZiHRn5AiAaR0G8myAAA <br>
 Weapon: Staff with +20% enchantment duration (to maintain Shadow Form) <br>
-Armor: Max armor with +10 armor while enchanted; other mods are flexible <br> 
+Armor: Max armor with +10 armor while enchanted; other runes and insignias are flexible <br> 
 
 ## Issues & Limitations
 The script is designed for 1920×1080 resolution
 
 Other resolutions require adjusting:
+- Movement coordinates
+- Item pickup coordinates
+- Image‑recognition assets
 
-    1. Movement coordinates
-    2. Item pickup coordinates
-    3. Image‑recognition assets
-    
 This is a personal project, not a universal bot, but feel free to fork and adapt it
 
 If you encounter issues or have suggestions, please open an issue on GitHub.
