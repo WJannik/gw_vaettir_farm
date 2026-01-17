@@ -53,14 +53,14 @@ def cast_spike(nearest_enemy: bool = True) -> None:
         keyboard.press('c')
         time.sleep(0.01)
         keyboard.release('c')
-        time.sleep(0.01)
+        time.sleep(0.05)
     else:
         for _ in range(1):
             # Get next enemy by pressing tab key
             keyboard.press(Key.tab)
             time.sleep(0.01)
             keyboard.release(Key.tab)
-            time.sleep(0.01)
+            time.sleep(0.05)
     cast_skill('7', cast_time=0.25, aftercast_delay_required=True, skill_name="Wastrel's Demise")
     # Remove aftercast delay, since this is sometimes on cooldown
     cast_skill('6', cast_time=0.25, aftercast_delay_required=False, skill_name="Cry of Pain") 

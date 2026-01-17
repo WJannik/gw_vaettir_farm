@@ -61,7 +61,7 @@ class SpikePhase:
         
         # Check for enemies
         if not utils_enemy.check_next_enemy():
-            time.sleep(0.1)
+            time.sleep(0.05)
             if not utils_enemy.check_next_enemy():
                 run_time_spike = time.time() - last_used_logging_time
                 return "start_collecting", run_time_spike

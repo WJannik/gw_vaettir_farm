@@ -43,7 +43,7 @@ def check_next_enemy(use_only_compass: bool = False) -> bool:
         keyboard.press('c')
         time.sleep(0.01)
         keyboard.release('c')
-        time.sleep(0.01)  # Wait a moment to update
+        time.sleep(0.05)  # Wait a moment to update
         
         # Generate bounding box and capture the main region
         bbox = generate_bbox(860, 25, 180, 15)

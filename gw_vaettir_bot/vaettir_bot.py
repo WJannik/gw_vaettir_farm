@@ -47,11 +47,11 @@ def start_farm(number_of_runs: int) -> None:
         times = {'forward': 0, 'backward': 0, 'spike': 0, 'collecting': 0, 'enemies_stacked': 0}
         last_used_logging_time = time.time()
         #print(f"Starting the {run_number+1}-th run in ...")
-        for countdown in range(3, 0, -1):
+        for countdown in range(4, 0, -1):
             time.sleep(1)
         # Start run in bjora marches to jaga moraine area
-        utils_areas.bjora_marches2jaga_moraine()  
-        utils_areas.jaga_moraine2jarnskeggi() 
+        utils_areas.bjora_marches2jaga_moraine(12.0)  
+        utils_areas.jaga_moraine2jarnskeggi(7.5) 
         utils_areas.pick_up_norn_blessing() 
 
         # Initialize phase handlers
