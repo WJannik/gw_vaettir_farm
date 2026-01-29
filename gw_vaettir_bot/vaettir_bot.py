@@ -41,7 +41,10 @@ def start_farm(number_of_runs: int) -> None:
         'enemies_stacked': []
     }
     
+    stop_all_runs = False
     for run_number in tqdm(range(number_of_runs), desc="Runs"):
+        if stop_all_runs:
+            break
         start_time_run = time.time()
         # Compact run time tracking
         times = {'forward': 0, 'backward': 0, 'spike': 0, 'collecting': 0, 'enemies_stacked': 0}
@@ -94,12 +97,10 @@ def start_farm(number_of_runs: int) -> None:
                 
                 # Handle collecting logic
                 result, updated_time = collecting_phase.handle_collecting_logic(last_used_logging_time)
-                
                 if result == "collecting_finished":
                     times['collecting'] += updated_time
                     last_used_logging_time = time.time()
                     movement_phase.perform_turn_around()
-
             # Spike phase 
             # Enable spike phase if final position is reached and no movement for specified time
             if (movement_phase.final_position_reached_forward and not spike_phase.is_in_pre_spike_phase() 
@@ -157,6 +158,11 @@ def start_farm(number_of_runs: int) -> None:
             if time_passed_in_seconds > 400 and not collecting_phase.is_collecting():
                 collecting_phase.start_collecting()
                 spike_phase.disable_spike_mode()
+            if time_passed_in_seconds > 400 and collecting_phase.is_collecting():
+                stop_all_runs = True
+                times['collecting'] += time.time() - last_used_logging_time
+                last_used_logging_time = time.time()
+                break  # Exit if collecting takes too long i.e. inventory is full and all runs should be stopped
 
             time.sleep(0.01)  # Sleep to prevent high CPU usage
 
@@ -164,7 +170,9 @@ def start_farm(number_of_runs: int) -> None:
         utils_areas.jaga_moraine2jarnskeggi(12.0)
         utils_areas.jaga_moraine2bjora_marches(10.0)
 
-        times['backward'] += time.time() - last_used_logging_time
+        # Only add backward time if we didn't exit early due to full inventory
+        if not stop_all_runs:
+            times['backward'] += time.time() - last_used_logging_time
         
         # Log all run data compactly
         total_time = time.time() - start_time_run
@@ -173,6 +181,10 @@ def start_farm(number_of_runs: int) -> None:
             run_data[phase].append(times[phase])
 
         print(f"Run {run_number+1} completed in {total_time:.2f} seconds.")
+        
+        # If inventory is full, print a message and break
+        if stop_all_runs:
+            print(f"Inventory full after {run_number+1} runs. Stopping all runs.")
 
     # Plot the run times by phase for each run
     plot_run_times(run_data)

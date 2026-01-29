@@ -36,7 +36,7 @@ def check_next_item() -> bool:
     bbox = generate_bbox(860, 25, 180, 15)  # x=860, y=25, width=180, height=15
     _, img_array = capture_and_process_region(bbox, "item_check")
 
-    if is_yellow(img_array,20):
+    if is_yellow(img_array,5):
         print("Yellow item detected!")
         pick_up_selected_object()
         return True

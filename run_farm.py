@@ -1,7 +1,7 @@
 import argparse
 from gw_vaettir_bot import start_farm
 
-def main(number_of_runs: int=5) -> None:
+def main(number_of_runs: int=40) -> None:
     try:
         # Start the farming process
         start_farm(number_of_runs)  # You can adjust the number of runs here
@@ -12,8 +12,8 @@ def main(number_of_runs: int=5) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Guild Wars Vaettir Farming Bot')
-    parser.add_argument('runs', type=int, nargs='?', default=5, 
-                       help='Number of farming runs to execute (default: 5)')
+    parser.add_argument('runs', type=int, nargs='?', default=40, 
+                       help='Number of farming runs to execute (default: 40)')
     
     args = parser.parse_args()
-    main(args.runs) 
+    main(args.runs)
