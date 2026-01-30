@@ -40,7 +40,7 @@ def start_farm(number_of_runs: int) -> None:
         'collecting': [],
         'enemies_stacked': []
     }
-    
+    time.sleep(5) # Time to swap into the window
     stop_all_runs = False
     for run_number in tqdm(range(number_of_runs), desc="Runs"):
         if stop_all_runs:
@@ -49,12 +49,11 @@ def start_farm(number_of_runs: int) -> None:
         # Compact run time tracking
         times = {'forward': 0, 'backward': 0, 'spike': 0, 'collecting': 0, 'enemies_stacked': 0}
         last_used_logging_time = time.time()
-        #print(f"Starting the {run_number+1}-th run in ...")
-        for countdown in range(4, 0, -1):
-            time.sleep(1)
+        # Waiting before starting the run
+        time.sleep(3) 
         # Start run in bjora marches to jaga moraine area
-        utils_areas.bjora_marches2jaga_moraine(12.0)  
-        utils_areas.jaga_moraine2jarnskeggi(7.5) 
+        utils_areas.bjora_marches2jaga_moraine(11.0)  
+        utils_areas.jaga_moraine2jarnskeggi(6.5) 
         utils_areas.pick_up_norn_blessing() 
 
         # Initialize phase handlers
@@ -158,7 +157,8 @@ def start_farm(number_of_runs: int) -> None:
             if time_passed_in_seconds > 400 and not collecting_phase.is_collecting():
                 collecting_phase.start_collecting()
                 spike_phase.disable_spike_mode()
-            if time_passed_in_seconds > 400 and collecting_phase.is_collecting():
+            #if time_passed_in_seconds > 400 and collecting_phase.is_collecting():
+            if time.time() - last_used_logging_time > 60 and collecting_phase.is_collecting(): # Is this condition working better? If it works than it should be way better!
                 stop_all_runs = True
                 times['collecting'] += time.time() - last_used_logging_time
                 last_used_logging_time = time.time()

@@ -54,8 +54,8 @@ class SpikePhase:
             return None, last_used_logging_time
         
         # Check timing conditions for casting
-        if not ((time_passed_in_seconds - last_shadowform_cast_time > 3.0 or last_shadowform_cast_time == 0)
-                and time_passed_in_seconds - last_shadowform_cast_time < 18.0 
+        if not ((time_passed_in_seconds - last_shadowform_cast_time > 2.00 or last_shadowform_cast_time == 0)
+                and time_passed_in_seconds - last_shadowform_cast_time < 18.5 
                 and (time_passed_in_seconds - self.last_spike_cast_time >= SPIKE_COOLDOWN)):
             return None, last_used_logging_time
         
