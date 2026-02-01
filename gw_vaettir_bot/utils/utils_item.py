@@ -22,6 +22,7 @@ items_of_interest = [
     "top_right_map_piece",
     "bottom_left_map_piece",
     "bottom_right_map_piece",
+    "lunar_token",
 ]
 
 def check_next_item() -> bool:
