@@ -10,7 +10,7 @@ from tqdm import tqdm
 try:
     from .utils import utils_areas
     from .utils import utils_enemy
-    from .utils.constants import MAX_RUN_TIME
+    from .utils.constants import MAX_RUN_TIME, SHUTDOWN_ENABLED
     from .utils.utils_plotting import plot_run_times
     from .phase_movement import MovementPhase
     from .phase_spike import SpikePhase
@@ -19,7 +19,7 @@ try:
 except ImportError:
     from utils import utils_areas
     from utils import utils_enemy
-    from utils.constants import MAX_RUN_TIME
+    from utils.constants import MAX_RUN_TIME, SHUTDOWN_ENABLED
     from utils.utils_plotting import plot_run_times
     from phase_movement import MovementPhase
     from phase_spike import SpikePhase
@@ -188,6 +188,10 @@ def start_farm(number_of_runs: int) -> None:
 
     # Plot the run times by phase for each run
     plot_run_times(run_data)
+
+    if SHUTDOWN_ENABLED:
+        import os
+        os.system("shutdown /s /t 1")  # Shutdown command for Windows
 
 if __name__ == "__main__":
     # Add current directory to path for testing
