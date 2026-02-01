@@ -29,7 +29,7 @@ def are_enemies_stacked() -> bool:
         # Save the debug image img_array
         plt.imsave("gw_vaettir_bot/debug_images/enemies_stacked.png", img_array)
     except Exception as e:
-        print(f"Error saving debug image {"enemies_stacked"}.png:", e)
+        print(f"Error saving debug image enemies_stacked.png:", e)
     # Check for red or yellow colors indicating that the enemies are not yet stacked
     return not (is_red(img_array, 1) or is_yellow(img_array, 1))
 
@@ -65,7 +65,7 @@ def check_next_enemy(use_only_compass: bool = False) -> bool:
         # Save the debug image img_array_compass
         plt.imsave("gw_vaettir_bot/debug_images/enemies_without_edge.png", img_array_compass)
     except Exception as e:
-        print(f"Error saving debug image {"enemies_without_edge"}.png:", e)
+        print(f"Error saving debug image enemies_without_edge.png:", e)
     if is_red(img_array_compass, 1) or is_yellow(img_array_compass, 1):
         if use_only_compass:
             return True
